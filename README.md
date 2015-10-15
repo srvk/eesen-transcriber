@@ -20,3 +20,8 @@ Assuming you have installed [Vagrant](http://vagrantup.com), to get started, do:
 Lots of output will follow, including a lengthy download and install. When it finishes, you will be able to log into the IVW machine with:
 
     vagrant ssh
+
+Once logged in, change directories to /home/vagrant/tools/eesen-offline-transcriber to find README instructions there. Note that the size of the VM is controlled by the Vagrantfile, and is rather small in RAM:
+    vb.memory = 4096 # 4 GB
+This supports transcribing of small audio/video files. But for larger audio/video files (around an hour in length) you may need to crank this to more like 12 GB, which means your host computer will need around 16 GB.
+
