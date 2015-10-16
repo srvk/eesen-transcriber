@@ -92,9 +92,9 @@ wget -nv http://speechkitchen.org/vms/Data/cuda-repo-ubuntu1404-7-5-local_7.5-18
 dpkg -i cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
 rm cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
 apt-get update                                                                  
-                                                                                
+
 apt-get remove --purge xserver-xorg-video-nouveau                           
-                                                                                
+
 apt-get install -y cuda
 
 # do not do the below.  copy it verbatim or get older version
@@ -110,7 +110,6 @@ apt-get install -y cuda
       make depend
       make
 
-
 # get models
 cd /home/vagrant/eesen/asr_egs
 wget -nv http://speechkitchen.org/vms/Data/tedlium-fbank.tgz
@@ -123,13 +122,6 @@ cd /home/vagrant/tools
 wget -nv http://speechkitchen.org/vms/Data/eesen-offline-transcriber.tgz
 tar zxvf eesen-offline-transcriber.tgz
 rm eesen-offline-transcriber.tgz
-
-
-#fixups
-cd eesen-offline-transcriber
-rm -f steps_eesen
-ln -s /home/vagrant/eesen/asr_egs/tedlium-fbank/steps steps_eesen
-sed -i s/er1k/vagrant/ Makefile.options
 
 # get XFCE, xterm
 sudo apt-get install -y xfce4-panel xterm
