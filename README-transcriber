@@ -1,0 +1,793 @@
+
+Aladdin English Kaldi Offline Transcriber README
+Installation Instructions
+
+Create a folder on your host computer named ‘aladdin-transcriber’, and beneath it, folders ‘transcribe-in’ and ‘transcribe-out’.
+
+Kaldi Offline Transcriber README
+
+This folder contains code adapted from ALUMAE (estonian) Kaldi
+Offline Decoder, adapted for English 
+It also makes use of speaker diarization code from LIUM.
+
+It can be run in several ways.
+
+METHOD ONE – Directly call Makefile
+
+    in the virtual machine, Path to the transcriber home folder, e.g:
+
+cd /home/vagrant/tools/kaldi-offline-transcriber
+
+    Place an audio or video file to be decode into the src-audio folder, e.g:
+
+cp test1.mp4 src-audio/
+
+    Issue the make command with the target as the name of the
+    desired output file, based on the input filename, e.g:
+
+make build/output/test1.txt
+
+    Wait for results (see sample log at the end of this document)
+
+METHOD TWO – Copy files into a watched folder
+
+This method makes use of incron, a daemon that monitors
+filesystem events and fires off actions according to rules.
+The rules are stored in a file (/var/spool/incron/vagrant).
+The preferred way to edit these files is with the command:
+
+  incrontab -e
+
+To check the status of the incron service, use the command:
+
+  service incron status
+
+You should see the result:
+
+  * incron is running
+
+We have already set up a rule which you can see by looking at
+the file mentioned above, or with the command:
+
+  incrontab -l
+
+Where the output should look like this:
+
+  /home/vagrant/tools/kaldi-offline-transcriber/audio IN_CLOSE_WRITE /home/vagrant/tools/kaldi-offline-transcriber/run_logged.sh --txt result/$#.txt $@/$#
+
+This rule lists the folder being monitored, the event to
+trigger it (a file being closed/written), and a command to
+run. In this case, “run_logged.sh” which specifies to produce
+a text file as output, storing it in the result/ folder, based
+on the input filename $# and input folder $@.
+
+The script writes to the log transcriber.log so that we can
+monitor progress (usually via ‘tail -f transcriber.log’).
+
+This all runs in the VM, but we want the system to automatically
+transcribe files placed in a folder on the host computer, so we
+run a process to monitor the host folder. To kick things off, from
+the Unity panel on the VM desktop, click the goldfish icon. Or by hand,
+from the transcriber home folder (/home/vagrant/tools/kaldi-offline-transcriber) execute:
+
+  ./run.sh
+
+Some tips:
+
+        It is best to use a different filename for each source
+        According to the instructions at the top of this file, It is assumed a VirtualBox shared host folder is set up and mounted as /media/sf_db and that it contains two folders for input and output:
+
+transcribe-in/
+transcribe-out/
+
+    It is better to not place lots of files in the host shared folder at once. Though the system will try to process them all, we can’t be sure how reliable it will work with large numbers of files since it can only
+    transcribe one file at a time… the rest get re-triggered as incron events, by ‘touch’-ing them.
+    Input files disappear, that’s how we know they’ve been processed
+    Formats that are supported:
+    (wav, mp3, ogg, mp2, m4a, mp4, flac, amr, mpg)
+
+FILES IN THIS FOLDER
+
+audio     - input folder watched by incron
+build     - working data for Kaldi offline transcriber
+conf      - configuration for Kaldi decoder
+lib    - Java libraries for diarization
+local    - scoring scripts
+Makefile – Rules for running kaldi-offline-transcriber
+Makefile.options – Make overrides
+models – Models for diarization
+README – this file
+result – symlink to host shared folder /media/sf_db/transcribe-out where transcriptions appear
+run_logged.sh – script to run speech2text.sh and log to a file
+run.sh – script to start offline transcriber (kick incron and monitor log file)
+scripts – utility scripts for offline transcriber
+sid – Kaldi speaker id scripts
+speech2text.sh – wrapper script to run Makefile given input/output filenames
+stt.text - automated version of the above, called by other scripts
+src-audio – working folder for input to speech2text.sh
+steps – Kaldi processing scripts
+test1.wav-test3.wav – sample audio input
+transcriber.log – system log
+utils – Kaldi util scripts
+watch.sh – script to watch host folder for new files and copy them to the local folder watched by incron which triggers processing
+
+SAMPLE OUTPUT LOG
+
+vagrant@myvagrantbox:~/tools/kaldi-offline-transcriber$ ./speech2text.sh /vagrant/Aladdin_Videos/HVC000164.mp4 
+./speech2text.sh /vagrant/Aladdin_Videos/HVC000164.mp4
+mkdir -p `dirname build/audio/base/HVC000164.wav`
+avconv -i src-audio/HVC000164.mp4 -ac 1 -ar 16k -y build/audio/base/HVC000164.wav 
+avconv version 9.18-6:9.18-0ubuntu0.14.04.1, Copyright (c) 2000-2014 the Libav developers
+  built on Mar 16 2015 13:19:10 with gcc 4.8 (Ubuntu 4.8.2-19ubuntu1)
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'src-audio/HVC000164.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    creation_time   : 2010-08-15 06:41:54
+    encoder         : Lavf52.62.0
+    comment         : FlixEngineLinux_8.0.17.0 (www.on2.com)
+  Duration: 00:00:13.37, start: 0.000000, bitrate: 537 kb/s
+    Stream #0.0(und): Video: h264 (Constrained Baseline), yuv420p, 640x480 [PAR 1:1 DAR 4:3], 483 kb/s, 30 fps, 29.75 tbr, 1k tbn
+    Metadata:
+      creation_time   : 2010-08-15 06:41:54
+    Stream #0.1(und): Audio: aac, 11025 Hz, mono, fltp, 64 kb/s
+    Metadata:
+      creation_time   : 2010-08-15 06:41:54
+Output #0, wav, to 'build/audio/base/HVC000164.wav':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    creation_time   : 2010-08-15 06:41:54
+    ICMT            : FlixEngineLinux_8.0.17.0 (www.on2.com)
+    ISFT            : Lavf54.20.4
+    Stream #0.0(und): Audio: pcm_s16le, 16000 Hz, mono, s16, 256 kb/s
+    Metadata:
+      creation_time   : 2010-08-15 06:41:54
+Stream mapping:
+  Stream #0:1 -> #0:0 (aac -> pcm_s16le)
+Press ctrl-c to stop encoding
+
+video:0kB audio:418kB global headers:0kB muxing overhead 0.029441%
+rm -rf `dirname build/diarization/HVC000164/show.seg`
+mkdir -p `dirname build/diarization/HVC000164/show.seg`
+echo "HVC000164 1 0 1000000000 U U U 1" >  `dirname build/diarization/HVC000164/show.seg`/show.uem.seg;
+./scripts/diarization.sh build/audio/base/HVC000164.wav `dirname build/diarization/HVC000164/show.seg`/show.uem.seg;
+#####################################################
+#   show
+#####################################################
+***none=none
+***none=add
+***none=remplace
+show = show
+info[info] 	 ====================================================== 
+info[program] 	 name = MSegInit
+info[info] 	 ------------------------------------------------------ 
+info[show] 	 [options] show
+info[show] 	 show = show
+info[ParameterFeature-Input] 	 --fInputMask 	 Features input mask = build/audio/base/HVC000164.wav
+info[ParameterFeature-Input] 	 --fInputDesc 	 Features info (type[,s:e:ds:de:dds:dde,dim,c:r:wSize:method]) = audio2sphinx,1:1:0:0:0:0,13,0:0:0:0
+info[ParameterFeature-Input] 	 	 type [sphinx,spro4,htk,gztxt,audio2sphinx] = audio2sphinx (4)
+info[ParameterFeature-Input] 	 	 static [0=not present,1=present ,3=to be removed] = 1
+info[ParameterFeature-Input] 	 	 energy [0,1,3] = 1
+info[ParameterFeature-Input] 	 	 delta [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta energy [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta energy [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 file dim = 13
+info[ParameterFeature-Input] 	 	 normalization, center [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, reduce [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, window size = 0
+info[ParameterFeature-Input] 	 	 normalization, method [0 (segment), 1 (cluster), 2 (sliding), 3 (warping)] =0
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSegmentationFile-Input] 	 --sInputMask 	 segmentation mask = build/diarization/HVC000164/show.uem.seg
+info[ParameterSegmentationFile-Input ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sInputFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Output] 	 --sOutputMask 	 segmentation mask = ./build/diarization/HVC000164/show.i.seg
+info[ParameterSegmentationFile-Output ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sOutputFormat 	 segmentation format = seg,ISO-8859-1
+info[info] 	 ------------------------------------------------------ 
+[FeatureSet] read : compute data HVC000164 // % mem free=0.015875938141028393 used=14 max=910
+WARNING[mSegInit] 	 segment end after features end
+WARNING[mSegInit] 	 two consecutive features are the same, index = 1
+WARNING[mSegInit] 	 two consecutive features are the same, index = 2
+WARNING[mSegInit] 	 two consecutive features are the same, index = 3
+WARNING[mSegInit] 	 two consecutive features are the same, index = 4
+WARNING[mSegInit] 	 two consecutive features are the same, index = 5
+WARNING[mSegInit] 	 two consecutive features are the same, index = 6
+WARNING[mSegInit] 	 two consecutive features are the same, index = 7
+WARNING[mSegInit] 	 two consecutive features are the same, index = 8
+WARNING[mSegInit] 	 two consecutive features are the same, index = 9
+WARNING[mSegInit] 	 two consecutive features are the same, index = 10
+WARNING[mSegInit] 	 two consecutive features are the same, index = 11
+WARNING[mSegInit] 	 two consecutive features are the same, index = 12
+WARNING[mSegInit] 	 two consecutive features are the same, index = 13
+WARNING[mSegInit] 	 two consecutive features are the same, index = 14
+***none=none
+***none=add
+***none=remplace
+show = show
+info[info] 	 ====================================================== 
+info[program] 	 name = MDecode
+info[info] 	 ------------------------------------------------------ 
+info[show] 	 [options] show
+info[show] 	 show = show
+info[ParameterFeature-Input] 	 --fInputMask 	 Features input mask = build/audio/base/HVC000164.wav
+info[ParameterFeature-Input] 	 --fInputDesc 	 Features info (type[,s:e:ds:de:dds:dde,dim,c:r:wSize:method]) = audio2sphinx,1:3:2:0:0:0,13,0:0:0:0
+info[ParameterFeature-Input] 	 	 type [sphinx,spro4,htk,gztxt,audio2sphinx] = audio2sphinx (4)
+info[ParameterFeature-Input] 	 	 static [0=not present,1=present ,3=to be removed] = 1
+info[ParameterFeature-Input] 	 	 energy [0,1,3] = 3
+info[ParameterFeature-Input] 	 	 delta [0,1,2=computed on the fly,3] = 2
+info[ParameterFeature-Input] 	 	 delta energy [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta energy [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 file dim = 13
+info[ParameterFeature-Input] 	 	 normalization, center [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, reduce [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, window size = 0
+info[ParameterFeature-Input] 	 	 normalization, method [0 (segment), 1 (cluster), 2 (sliding), 3 (warping)] =0
+info[ParameterFeature-Input] 	 --fInputMemoryOccupationRate 	 memory occupation rate of the feature in the java virtual machine = 0.8
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSegmentationFile-Input] 	 --sInputMask 	 segmentation mask = ./build/diarization/HVC000164/show.i.seg
+info[ParameterSegmentationFile-Input ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sInputFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Output] 	 --sOutputMask 	 segmentation mask = ./build/diarization/HVC000164/show.pms.seg
+info[ParameterSegmentationFile-Output ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sOutputFormat 	 segmentation format = seg,ISO-8859-1
+info[info] 	 ------------------------------------------------------ 
+info[ParameterModelSet] 	 --tInputMask 	 model mask = models/sms.gmms
+info[ParameterTopGaussian] 	 --sTop 	 use top Gaussians (ntop,modelMask) = -1,
+info[ParameterTopGaussian] 		 nb = -1
+info[ParameterTopGaussian] 		 model = 
+info[info] 	 ------------------------------------------------------ 
+info[ParameterDecoder] 	 --dPenalty 	 model penalties = 500.0:0.0, 500.0:0.0, 10.0
+info[ParameterDecoder] 	 --dDurationConstraints 	 duration constraints during decoding [none|(minimal|periodic|fixed,value)] = none
+info[ParameterDecoder] 	 --dComputeLLhR 	 score is Log Likelihood Ratio = false
+info[ParameterDecoder] 	 --dShift 	 size of a step = 1
+[FeatureSet] read : compute data HVC000164 // % mem free=0.01621532780689972 used=14 max=910
+***none=none
+***none=add
+***none=remplace
+show = show
+info[info] 	 ====================================================== 
+info[program] 	 name = MSeg
+info[info] 	 ------------------------------------------------------ 
+info[show] 	 [options] show
+info[show] 	 show = show
+info[ParameterFeature-Input] 	 --fInputMask 	 Features input mask = build/audio/base/HVC000164.wav
+info[ParameterFeature-Input] 	 --fInputDesc 	 Features info (type[,s:e:ds:de:dds:dde,dim,c:r:wSize:method]) = audio2sphinx,1:1:0:0:0:0,13,0:0:0:0
+info[ParameterFeature-Input] 	 	 type [sphinx,spro4,htk,gztxt,audio2sphinx] = audio2sphinx (4)
+info[ParameterFeature-Input] 	 	 static [0=not present,1=present ,3=to be removed] = 1
+info[ParameterFeature-Input] 	 	 energy [0,1,3] = 1
+info[ParameterFeature-Input] 	 	 delta [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta energy [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta energy [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 file dim = 13
+info[ParameterFeature-Input] 	 	 normalization, center [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, reduce [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, window size = 0
+info[ParameterFeature-Input] 	 	 normalization, method [0 (segment), 1 (cluster), 2 (sliding), 3 (warping)] =0
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSegmentationFile-Input] 	 --sInputMask 	 segmentation mask = ./build/diarization/HVC000164/show.i.seg
+info[ParameterSegmentationFile-Input ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sInputFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Output] 	 --sOutputMask 	 segmentation mask = ./build/diarization/HVC000164/show.s.seg
+info[ParameterSegmentationFile-Output ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sOutputFormat 	 segmentation format = seg,ISO-8859-1
+info[info] 	 ------------------------------------------------------ 
+info[ParameterModel] 	 --kind 	 kind of Gaussians [FULL,DIAG] = FULL(0)
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSegmentation] 	 --sMethod 	 seg similarity [BIC,GLR,KL2,GD,H2] = GLR(1)
+info[ParameterSegmentation] 	 --sThr 	 seg threshold = -2.147483648E9
+info[ParameterSegmentation] 	 --sModelWindowSize 	 seg 1/2 window size (in features) = 250
+info[ParameterSegmentation] 	 --sMinimumWindowSize 	 seg min size segment (in features) = 250
+info[ParameterSegmentation] 	 --sRecursion 	 segmentation make by a recursion fonction = false
+[FeatureSet] read : compute data HVC000164 // % mem free=0.0158762985518659 used=14 max=910
+***none=none
+***none=add
+***none=remplace
+show = show
+info[info] 	 ====================================================== 
+info[program] 	 name = MClust
+info[info] 	 ------------------------------------------------------ 
+info[show] 	 [options] show
+info[show] 	 show = show
+info[ParameterFeature-Input] 	 --fInputMask 	 Features input mask = build/audio/base/HVC000164.wav
+info[ParameterFeature-Input] 	 --fInputDesc 	 Features info (type[,s:e:ds:de:dds:dde,dim,c:r:wSize:method]) = audio2sphinx,1:1:0:0:0:0,13,0:0:0:0
+info[ParameterFeature-Input] 	 	 type [sphinx,spro4,htk,gztxt,audio2sphinx] = audio2sphinx (4)
+info[ParameterFeature-Input] 	 	 static [0=not present,1=present ,3=to be removed] = 1
+info[ParameterFeature-Input] 	 	 energy [0,1,3] = 1
+info[ParameterFeature-Input] 	 	 delta [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta energy [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta energy [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 file dim = 13
+info[ParameterFeature-Input] 	 	 normalization, center [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, reduce [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, window size = 0
+info[ParameterFeature-Input] 	 	 normalization, method [0 (segment), 1 (cluster), 2 (sliding), 3 (warping)] =0
+info[ParameterFeature-Input] 	 --fInputMemoryOccupationRate 	 memory occupation rate of the feature in the java virtual machine = 0.8
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSegmentationFile-Input] 	 --sInputMask 	 segmentation mask = ./build/diarization/HVC000164/show.s.seg
+info[ParameterSegmentationFile-Input ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sInputFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Output] 	 --sOutputMask 	 segmentation mask = ./build/diarization/HVC000164/show.l.seg
+info[ParameterSegmentationFile-Output ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sOutputFormat 	 segmentation format = seg,ISO-8859-1
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSystem] 	 --saveAllStep = false
+info[info] 	 ------------------------------------------------------ 
+info[clust] 	 --cMethod 	 clustering method [l, r, h, c, ce, kl2, h2, gd, gdgmm, icr, t, glr] = l(0)
+info[ParameterClustering] 	 --cThr 	 clustering threshold = 2.5
+info[ParameterClustering] 	 --cMaximumMerge 	 maximum number of merges = 2147483647
+info[ParameterClustering] 	 --cMinimumOfCluster 	 minum number of speakers = 0
+info[ParameterClustering] 	 --cMinimumLength 	 minum length of cluster = 2147483647
+info[info] 	 ------------------------------------------------------ 
+info[ParameterModelSet] 	 --tOutputMask 	 model mask = %s.out.gmms
+info[info] 	 ------------------------------------------------------ 
+info[ParameterModel] 	 --kind 	 kind of Gaussians [FULL,DIAG] = FULL(0)
+info[ParameterModel] 	 --nbComp 	 number of Gaussians = 1
+[FeatureSet] read : compute data HVC000164 // % mem free=0.016220868075820516 used=14 max=910
+***none=none
+***none=add
+***none=remplace
+show = show
+info[info] 	 ====================================================== 
+info[program] 	 name = MClust
+info[info] 	 ------------------------------------------------------ 
+info[show] 	 [options] show
+info[show] 	 show = show
+info[ParameterFeature-Input] 	 --fInputMask 	 Features input mask = build/audio/base/HVC000164.wav
+info[ParameterFeature-Input] 	 --fInputDesc 	 Features info (type[,s:e:ds:de:dds:dde,dim,c:r:wSize:method]) = audio2sphinx,1:1:0:0:0:0,13,0:0:0:0
+info[ParameterFeature-Input] 	 	 type [sphinx,spro4,htk,gztxt,audio2sphinx] = audio2sphinx (4)
+info[ParameterFeature-Input] 	 	 static [0=not present,1=present ,3=to be removed] = 1
+info[ParameterFeature-Input] 	 	 energy [0,1,3] = 1
+info[ParameterFeature-Input] 	 	 delta [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta energy [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta energy [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 file dim = 13
+info[ParameterFeature-Input] 	 	 normalization, center [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, reduce [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, window size = 0
+info[ParameterFeature-Input] 	 	 normalization, method [0 (segment), 1 (cluster), 2 (sliding), 3 (warping)] =0
+info[ParameterFeature-Input] 	 --fInputMemoryOccupationRate 	 memory occupation rate of the feature in the java virtual machine = 0.8
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSegmentationFile-Input] 	 --sInputMask 	 segmentation mask = ./build/diarization/HVC000164/show.l.seg
+info[ParameterSegmentationFile-Input ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sInputFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Output] 	 --sOutputMask 	 segmentation mask = ./build/diarization/HVC000164/show.h.seg
+info[ParameterSegmentationFile-Output ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sOutputFormat 	 segmentation format = seg,ISO-8859-1
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSystem] 	 --saveAllStep = false
+info[info] 	 ------------------------------------------------------ 
+info[clust] 	 --cMethod 	 clustering method [l, r, h, c, ce, kl2, h2, gd, gdgmm, icr, t, glr] = h(1)
+info[ParameterClustering] 	 --cThr 	 clustering threshold = 6.0
+info[ParameterClustering] 	 --cMaximumMerge 	 maximum number of merges = 2147483647
+info[ParameterClustering] 	 --cMinimumOfCluster 	 minum number of speakers = 0
+info[ParameterClustering] 	 --cMinimumLength 	 minum length of cluster = 2147483647
+info[info] 	 ------------------------------------------------------ 
+info[ParameterModelSet] 	 --tOutputMask 	 model mask = %s.out.gmms
+info[info] 	 ------------------------------------------------------ 
+info[ParameterModel] 	 --kind 	 kind of Gaussians [FULL,DIAG] = FULL(0)
+info[ParameterModel] 	 --nbComp 	 number of Gaussians = 1
+[FeatureSet] read : compute data HVC000164 // % mem free=0.01588193940055531 used=14 max=910
+***none=none
+***none=add
+***none=remplace
+show = show
+info[info] 	 ====================================================== 
+info[program] 	 name = MTrainInit
+info[info] 	 ------------------------------------------------------ 
+info[show] 	 [options] show
+info[show] 	 show = show
+info[ParameterFeature-Input] 	 --fInputMask 	 Features input mask = build/audio/base/HVC000164.wav
+info[ParameterFeature-Input] 	 --fInputDesc 	 Features info (type[,s:e:ds:de:dds:dde,dim,c:r:wSize:method]) = audio2sphinx,1:1:0:0:0:0,13,0:0:0:0
+info[ParameterFeature-Input] 	 	 type [sphinx,spro4,htk,gztxt,audio2sphinx] = audio2sphinx (4)
+info[ParameterFeature-Input] 	 	 static [0=not present,1=present ,3=to be removed] = 1
+info[ParameterFeature-Input] 	 	 energy [0,1,3] = 1
+info[ParameterFeature-Input] 	 	 delta [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta energy [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta energy [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 file dim = 13
+info[ParameterFeature-Input] 	 	 normalization, center [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, reduce [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, window size = 0
+info[ParameterFeature-Input] 	 	 normalization, method [0 (segment), 1 (cluster), 2 (sliding), 3 (warping)] =0
+info[ParameterFeature-Input] 	 --fInputMemoryOccupationRate 	 memory occupation rate of the feature in the java virtual machine = 0.8
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSegmentationFile-Input] 	 --sInputMask 	 segmentation mask = ./build/diarization/HVC000164/show.h.seg
+info[ParameterSegmentationFile-Input ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sInputFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterModel] 	 --kind 	 kind of Gaussians [FULL,DIAG] = DIAG(1)
+info[ParameterModel] 	 --nbComp 	 number of Gaussians = 8
+info[ParameterModelSet] 	 --tOutputMask 	 model mask = ./build/diarization/HVC000164/show.init.gmms
+info[info] 	 ------------------------------------------------------ 
+info[ParameterEM] 	 --emCtrl 	 EM control (minIt,maxIt,minGain) = 1,5,0.01 (1,5,0.01)
+info[ParameterEM] 	 	 minIt = 1
+info[ParameterEM] 	 	 maxIt = 5
+info[ParameterEM] 	 	 minGain = 0.01
+info[ParameterInitializationEM]  --emInitMethod	em initialization method [split_all, split, uniform, copy] = uniform(2)
+info[info] 	 ------------------------------------------------------ 
+[FeatureSet] read : compute data HVC000164 // % mem free=0.016215336188547102 used=14 max=910
+***none=none
+***none=add
+***none=remplace
+show = show
+info[info] 	 ====================================================== 
+info[program] 	 name = MTrainEM
+info[info] 	 ------------------------------------------------------ 
+info[show] 	 [options] show
+info[show] 	 show = show
+info[ParameterFeature-Input] 	 --fInputMask 	 Features input mask = build/audio/base/HVC000164.wav
+info[ParameterFeature-Input] 	 --fInputDesc 	 Features info (type[,s:e:ds:de:dds:dde,dim,c:r:wSize:method]) = audio2sphinx,1:1:0:0:0:0,13,0:0:0:0
+info[ParameterFeature-Input] 	 	 type [sphinx,spro4,htk,gztxt,audio2sphinx] = audio2sphinx (4)
+info[ParameterFeature-Input] 	 	 static [0=not present,1=present ,3=to be removed] = 1
+info[ParameterFeature-Input] 	 	 energy [0,1,3] = 1
+info[ParameterFeature-Input] 	 	 delta [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta energy [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta energy [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 file dim = 13
+info[ParameterFeature-Input] 	 	 normalization, center [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, reduce [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, window size = 0
+info[ParameterFeature-Input] 	 	 normalization, method [0 (segment), 1 (cluster), 2 (sliding), 3 (warping)] =0
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSegmentationFile-Input] 	 --sInputMask 	 segmentation mask = ./build/diarization/HVC000164/show.h.seg
+info[ParameterSegmentationFile-Input ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sInputFormat 	 segmentation format = seg,ISO-8859-1
+info[info] 	 ------------------------------------------------------ 
+info[ParameterModelSet] 	 --tInputMask 	 model mask = ./build/diarization/HVC000164/show.init.gmms
+info[ParameterModelSet] 	 --tOutputMask 	 model mask = ./build/diarization/HVC000164/show.gmms
+info[info] 	 ------------------------------------------------------ 
+info[ParameterEM] 	 --emCtrl 	 EM control (minIt,maxIt,minGain) = 3,10,0.01 (3,10,0.01)
+info[ParameterEM] 	 	 minIt = 3
+info[ParameterEM] 	 	 maxIt = 10
+info[ParameterEM] 	 	 minGain = 0.01
+info[ParameterVarianceControl] 	 --varCtrl 	 covariance control (floor[,ceil]) = 0.0,10.0
+info[ParameterVarianceControl] 	 	 flooring = 0.0
+info[ParameterVarianceControl] 	 	 ceilling = 10.0
+info[info] 	 ------------------------------------------------------ 
+[FeatureSet] read : compute data HVC000164 // % mem free=0.015875887851144087 used=14 max=910
+Warning 	 variance of gaussian idx=7 ceilling 
+Warning 	 variance of gaussian idx=7 ceilling 
+Warning 	 variance of gaussian idx=7 ceilling 
+Warning 	 variance of gaussian idx=7 ceilling 
+Warning 	 variance of gaussian idx=7 ceilling 
+Warning 	 variance of gaussian idx=7 ceilling 
+Warning 	 variance of gaussian idx=7 ceilling 
+Warning 	 variance of gaussian idx=7 ceilling 
+Warning 	 variance of gaussian idx=7 ceilling 
+Warning 	 variance of gaussian idx=7 ceilling 
+***none=none
+***none=add
+***none=remplace
+show = show
+info[info] 	 ====================================================== 
+info[program] 	 name = MDecode
+info[info] 	 ------------------------------------------------------ 
+info[show] 	 [options] show
+info[show] 	 show = show
+info[ParameterFeature-Input] 	 --fInputMask 	 Features input mask = build/audio/base/HVC000164.wav
+info[ParameterFeature-Input] 	 --fInputDesc 	 Features info (type[,s:e:ds:de:dds:dde,dim,c:r:wSize:method]) = audio2sphinx,1:1:0:0:0:0,13,0:0:0:0
+info[ParameterFeature-Input] 	 	 type [sphinx,spro4,htk,gztxt,audio2sphinx] = audio2sphinx (4)
+info[ParameterFeature-Input] 	 	 static [0=not present,1=present ,3=to be removed] = 1
+info[ParameterFeature-Input] 	 	 energy [0,1,3] = 1
+info[ParameterFeature-Input] 	 	 delta [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta energy [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta energy [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 file dim = 13
+info[ParameterFeature-Input] 	 	 normalization, center [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, reduce [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, window size = 0
+info[ParameterFeature-Input] 	 	 normalization, method [0 (segment), 1 (cluster), 2 (sliding), 3 (warping)] =0
+info[ParameterFeature-Input] 	 --fInputMemoryOccupationRate 	 memory occupation rate of the feature in the java virtual machine = 0.8
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSegmentationFile-Input] 	 --sInputMask 	 segmentation mask = ./build/diarization/HVC000164/show.h.seg
+info[ParameterSegmentationFile-Input ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sInputFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Output] 	 --sOutputMask 	 segmentation mask = ./build/diarization/HVC000164/show.d.seg
+info[ParameterSegmentationFile-Output ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sOutputFormat 	 segmentation format = seg,ISO-8859-1
+info[info] 	 ------------------------------------------------------ 
+info[ParameterModelSet] 	 --tInputMask 	 model mask = build/diarization/HVC000164/show.gmms
+info[ParameterTopGaussian] 	 --sTop 	 use top Gaussians (ntop,modelMask) = -1,
+info[ParameterTopGaussian] 		 nb = -1
+info[ParameterTopGaussian] 		 model = 
+info[info] 	 ------------------------------------------------------ 
+info[ParameterDecoder] 	 --dPenalty 	 model penalties = 250.0
+info[ParameterDecoder] 	 --dDurationConstraints 	 duration constraints during decoding [none|(minimal|periodic|fixed,value)] = none
+info[ParameterDecoder] 	 --dComputeLLhR 	 score is Log Likelihood Ratio = false
+info[ParameterDecoder] 	 --dShift 	 size of a step = 1
+[FeatureSet] read : compute data HVC000164 // % mem free=0.015875929759381006 used=14 max=910
+***none=none
+***none=add
+***none=remplace
+show = show
+info[info] 	 ====================================================== 
+info[program] 	 name = SAdjSeg
+info[info] 	 ------------------------------------------------------ 
+info[show] 	 [options] show
+info[show] 	 show = show
+info[ParameterFeature-Input] 	 --fInputMask 	 Features input mask = build/audio/base/HVC000164.wav
+info[ParameterFeature-Input] 	 --fInputDesc 	 Features info (type[,s:e:ds:de:dds:dde,dim,c:r:wSize:method]) = audio2sphinx,1:1:0:0:0:0,13,0:0:0:0
+info[ParameterFeature-Input] 	 	 type [sphinx,spro4,htk,gztxt,audio2sphinx] = audio2sphinx (4)
+info[ParameterFeature-Input] 	 	 static [0=not present,1=present ,3=to be removed] = 1
+info[ParameterFeature-Input] 	 	 energy [0,1,3] = 1
+info[ParameterFeature-Input] 	 	 delta [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta energy [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta energy [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 file dim = 13
+info[ParameterFeature-Input] 	 	 normalization, center [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, reduce [0,1] = 0
+info[ParameterFeature-Input] 	 	 normalization, window size = 0
+info[ParameterFeature-Input] 	 	 normalization, method [0 (segment), 1 (cluster), 2 (sliding), 3 (warping)] =0
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSegmentationFile-Input] 	 --sInputMask 	 segmentation mask = ./build/diarization/HVC000164/show.d.seg
+info[ParameterSegmentationFile-Input ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sInputFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Output] 	 --sOutputMask 	 segmentation mask = ./build/diarization/HVC000164/show.adj.h.seg
+info[ParameterSegmentationFile-Output ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sOutputFormat 	 segmentation format = seg,ISO-8859-1
+info[info] 	 ------------------------------------------------------ 
+info[ParameterAdjustSegmentation] 	 --sSeachDecay = 25
+info[ParameterAdjustSegmentation] 	 --sHalfWindowSizeForEnergie = 5
+***none=none
+***none=add
+***none=remplace
+show = show
+info[info] 	 ====================================================== 
+info[program] 	 name = SFilter
+info[info] 	 ------------------------------------------------------ 
+info[show] 	 [options] show
+info[show] 	 show = show
+info[ParameterSegmentationFile-Input] 	 --sInputMask 	 segmentation mask = ./build/diarization/HVC000164/show.adj.h.seg
+info[ParameterSegmentationFile-Input ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sInputFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Filter] 	 --sFilterMask 	 segmentation mask = ./build/diarization/HVC000164/show.pms.seg
+info[ParameterSegmentationFile-Filter ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sFilterFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Output] 	 --sOutputMask 	 segmentation mask = ./build/diarization/HVC000164/show.flt1.seg
+info[ParameterSegmentationFile-Output ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sOutputFormat 	 segmentation format = seg,ISO-8859-1
+info[info] 	 ------------------------------------------------------ 
+info[ParameterFilterClusterName] 	 --sFilterClusterName 	 name of the filterCluster = music
+info[info] 	 ------------------------------------------------------ 
+info[ParameterFilter] 	 --fltSegMinLenSil = 25
+info[ParameterFilter] 	 --fltSegMinLenSpeech = 150
+info[ParameterFilter] 	 --fltSegPadding = 25
+***none=none
+***none=add
+***none=remplace
+show = show
+info[info] 	 ====================================================== 
+info[program] 	 name = SFilter
+info[info] 	 ------------------------------------------------------ 
+info[show] 	 [options] show
+info[show] 	 show = show
+info[ParameterSegmentationFile-Input] 	 --sInputMask 	 segmentation mask = ./build/diarization/HVC000164/show.flt1.seg
+info[ParameterSegmentationFile-Input ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sInputFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Filter] 	 --sFilterMask 	 segmentation mask = ./build/diarization/HVC000164/show.pms.seg
+info[ParameterSegmentationFile-Filter ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sFilterFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Output] 	 --sOutputMask 	 segmentation mask = ./build/diarization/HVC000164/show.flt2.seg
+info[ParameterSegmentationFile-Output ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sOutputFormat 	 segmentation format = seg,ISO-8859-1
+info[info] 	 ------------------------------------------------------ 
+info[ParameterFilterClusterName] 	 --sFilterClusterName 	 name of the filterCluster = jingle
+info[info] 	 ------------------------------------------------------ 
+info[ParameterFilter] 	 --fltSegMinLenSil = 25
+info[ParameterFilter] 	 --fltSegMinLenSpeech = 150
+info[ParameterFilter] 	 --fltSegPadding = 25
+***none=none
+***none=add
+***none=remplace
+testprog: unrecognized option '--sSegMaxLenModel=2000'
+show = show
+info[info] 	 ====================================================== 
+info[program] 	 name = SSplitSeg
+info[info] 	 ------------------------------------------------------ 
+info[show] 	 [options] show
+info[show] 	 show = show
+info[ParameterSegmentationFile-Input] 	 --sInputMask 	 segmentation mask = ./build/diarization/HVC000164/show.flt2.seg
+info[ParameterSegmentationFile-Input ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sInputFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Filter] 	 --sFilterMask 	 segmentation mask = ./build/diarization/HVC000164/show.pms.seg
+info[ParameterSegmentationFile-Filter ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sFilterFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Output] 	 --sOutputMask 	 segmentation mask = ./build/diarization/HVC000164/show.spl.seg
+info[ParameterSegmentationFile-Output ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sOutputFormat 	 segmentation format = seg,ISO-8859-1
+info[info] 	 ------------------------------------------------------ 
+info[ParameterFilterClusterName] 	 --sFilterClusterName 	 name of the filterCluster = iS,iT,j
+info[ParameterModelSet] 	 --tInputMask 	 model mask = models/s.gmms
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSegmentationSplit] 	 --sSegMaxLen = 2000
+info[ParameterSegmentationSplit] 	 --sSegMinLen = 200
+[FeatureSet] read : compute data HVC000164 // % mem free=0.016554667182886743 used=15 max=910
+***none=none
+***none=add
+***none=remplace
+show = show
+info[info] 	 ====================================================== 
+info[program] 	 name = MScore
+info[info] 	 ------------------------------------------------------ 
+info[show] 	 [options] show
+info[show] 	 show = show
+info[ParameterFeature-Input] 	 --fInputMask 	 Features input mask = build/audio/base/HVC000164.wav
+info[ParameterFeature-Input] 	 --fInputDesc 	 Features info (type[,s:e:ds:de:dds:dde,dim,c:r:wSize:method]) = audio2sphinx,1:3:2:0:0:0,13,1:1:0:0
+info[ParameterFeature-Input] 	 	 type [sphinx,spro4,htk,gztxt,audio2sphinx] = audio2sphinx (4)
+info[ParameterFeature-Input] 	 	 static [0=not present,1=present ,3=to be removed] = 1
+info[ParameterFeature-Input] 	 	 energy [0,1,3] = 3
+info[ParameterFeature-Input] 	 	 delta [0,1,2=computed on the fly,3] = 2
+info[ParameterFeature-Input] 	 	 delta energy [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta energy [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 file dim = 13
+info[ParameterFeature-Input] 	 	 normalization, center [0,1] = 1
+info[ParameterFeature-Input] 	 	 normalization, reduce [0,1] = 1
+info[ParameterFeature-Input] 	 	 normalization, window size = 0
+info[ParameterFeature-Input] 	 	 normalization, method [0 (segment), 1 (cluster), 2 (sliding), 3 (warping)] =0
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSegmentationFile-Input] 	 --sInputMask 	 segmentation mask = ./build/diarization/HVC000164/show.spl.seg
+info[ParameterSegmentationFile-Input ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sInputFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Output] 	 --sOutputMask 	 segmentation mask = ./build/diarization/HVC000164/show.g.seg
+info[ParameterSegmentationFile-Output ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sOutputFormat 	 segmentation format = seg,ISO-8859-1
+info[info] 	 ------------------------------------------------------ 
+info[ParameterModelSet] 	 --tInputMask 	 model mask = models/gender.gmms
+info[ParameterTopGaussian] 	 --sTop 	 use top Gaussians (ntop,modelMask) = -1,
+info[ParameterTopGaussian] 		 nb = -1
+info[ParameterTopGaussian] 		 model = 
+info[ParameterScore] 	 --sGender = true
+info[ParameterScore] 	 --sByCluster = true
+info[ParameterScore] 	 --sBySegment = false
+info[ParameterScore] 	 --sSetLabel [none, add, remplace] = none
+info[ParameterScore] 	 --sTNorm = false
+info[ParameterSegmentation] 	 --sThr 	 seg threshold = -2.147483648E9
+info[info] 	 ------------------------------------------------------ 
+[FeatureSet] read : compute data HVC000164 // % mem free=0.01621526913536803 used=14 max=910
+***none=none
+***none=add
+***none=remplace
+show = show
+info[info] 	 ====================================================== 
+info[program] 	 name = MClust
+info[info] 	 ------------------------------------------------------ 
+info[show] 	 [options] show
+info[show] 	 show = show
+info[ParameterFeature-Input] 	 --fInputMask 	 Features input mask = build/audio/base/HVC000164.wav
+info[ParameterFeature-Input] 	 --fInputDesc 	 Features info (type[,s:e:ds:de:dds:dde,dim,c:r:wSize:method]) = audio2sphinx,1:3:2:0:0:0,13,1:1:300:4
+info[ParameterFeature-Input] 	 	 type [sphinx,spro4,htk,gztxt,audio2sphinx] = audio2sphinx (4)
+info[ParameterFeature-Input] 	 	 static [0=not present,1=present ,3=to be removed] = 1
+info[ParameterFeature-Input] 	 	 energy [0,1,3] = 3
+info[ParameterFeature-Input] 	 	 delta [0,1,2=computed on the fly,3] = 2
+info[ParameterFeature-Input] 	 	 delta energy [0,1,2=computed on the fly,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 delta delta energy [0,1,2,3] = 0
+info[ParameterFeature-Input] 	 	 file dim = 13
+info[ParameterFeature-Input] 	 	 normalization, center [0,1] = 1
+info[ParameterFeature-Input] 	 	 normalization, reduce [0,1] = 1
+info[ParameterFeature-Input] 	 	 normalization, window size = 300
+info[ParameterFeature-Input] 	 	 normalization, method [0 (segment), 1 (cluster), 2 (sliding), 3 (warping)] =4
+info[ParameterFeature-Input] 	 --fInputMemoryOccupationRate 	 memory occupation rate of the feature in the java virtual machine = 0.8
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSegmentationFile-Input] 	 --sInputMask 	 segmentation mask = ./build/diarization/HVC000164/show.g.seg
+info[ParameterSegmentationFile-Input ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sInputFormat 	 segmentation format = seg,ISO-8859-1
+info[ParameterSegmentationFile-Output] 	 --sOutputMask 	 segmentation mask = ./build/diarization/HVC000164/show.seg
+info[ParameterSegmentationFile-Output ([seg,bck,ctl,saus.seg,seg.xml,media.xml],[ISO-8859-1,UTF8])] 	 --sOutputFormat 	 segmentation format = seg,ISO-8859-1
+info[info] 	 ------------------------------------------------------ 
+info[ParameterSystem] 	 --saveAllStep = false
+info[info] 	 ------------------------------------------------------ 
+info[clust] 	 --cMethod 	 clustering method [l, r, h, c, ce, kl2, h2, gd, gdgmm, icr, t, glr] = ce(3)
+info[ParameterClustering] 	 --cThr 	 clustering threshold = 1.7
+info[ParameterClustering] 	 --cMaximumMerge 	 maximum number of merges = 2147483647
+info[ParameterClustering] 	 --cMinimumOfCluster 	 minum number of speakers = 0
+info[ParameterClustering] 	 --cMinimumLength 	 minum length of cluster = 2147483647
+info[info] 	 ------------------------------------------------------ 
+info[ParameterModelSet] 	 --tOutputMask 	 model mask = ./build/diarization/HVC000164/show.c.gmm
+info[info] 	 ------------------------------------------------------ 
+info[ParameterModelSet] 	 --tInputMask 	 model mask = models/ubm.gmm
+info[ParameterTopGaussian] 	 --sTop 	 use top Gaussians (ntop,modelMask) = 5,models/ubm.gmm
+info[ParameterTopGaussian] 		 nb = 5
+info[ParameterTopGaussian] 		 model = models/ubm.gmm
+info[ParameterEM] 	 --emCtrl 	 EM control (minIt,maxIt,minGain) = 1,5,0.01 (1,5,0.01)
+info[ParameterEM] 	 	 minIt = 1
+info[ParameterEM] 	 	 maxIt = 5
+info[ParameterEM] 	 	 minGain = 0.01
+info[ParameterMAP] 	 --mapCtrl 	 MAP control (method,prior,w:m:c) = std,15,0:1:0
+info[ParameterMAP] 	 	 Method = 0
+info[ParameterMAP] 	 	 prior = 15.0
+info[ParameterMAP] 	 	 weight adaptation [0,1] = false
+info[ParameterMAP] 	 	 mean adaptation [0,1] = true
+info[ParameterMAP] 	 	 covariance adaptation [0,1] = false
+info[ParameterVarianceControl] 	 --varCtrl 	 covariance control (floor[,ceil]) = 0.0,10.0
+info[ParameterVarianceControl] 	 	 flooring = 0.0
+info[ParameterVarianceControl] 	 	 ceilling = 10.0
+[FeatureSet] read : compute data HVC000164 // % mem free=0.002730070185903598 used=2 max=910
+touch build/diarization/HVC000164/show.h.seg
+rm -rf build/audio/segmented/HVC000164
+mkdir -p build/audio/segmented/HVC000164
+cat build/diarization/HVC000164/show.h.seg | cut -f 3,4,8 -d " " | \
+	while read LINE ; do \
+		start=`echo $LINE | cut -f 1 -d " " | perl -npe '$_=$_/100.0'`; \
+		len=`echo $LINE | cut -f 2 -d " " | perl -npe '$_=$_/100.0'`; \
+		sp_id=`echo $LINE | cut -f 3 -d " "`; \
+		timeformatted=`echo "$start $len" | perl -ne '@t=split(); $start=$t[0]; $len=$t[1]; $end=$start+$len; printf("%08.3f-%08.3f\n", $start,$end);'` ; \
+		sox build/audio/base/HVC000164.wav --norm build/audio/segmented/HVC000164/HVC000164_${timeformatted}_${sp_id}.wav trim $start $len ; \
+	done
+mkdir -p `dirname build/trans/HVC000164/data/wav.scp`
+/bin/ls build/audio/segmented/HVC000164/*.wav  | \
+		perl -npe 'chomp; $orig=$_; s/.*\/(.*)_(\d+\.\d+-\d+\.\d+)_(S\d+)\.wav/\1-\3---\2/; $_=$_ .  " $orig\n";' | LC_ALL=C sort > build/trans/HVC000164/data/wav.scp
+cat build/trans/HVC000164/data/wav.scp | perl -npe 's/\s+.*//; s/((.*)---.*)/\1 \2/' > build/trans/HVC000164/data/utt2spk
+utils/utt2spk_to_spk2utt.pl build/trans/HVC000164/data/utt2spk > build/trans/HVC000164/data/spk2utt
+rm -rf build/trans/HVC000164/mfcc
+utils/fix_data_dir.sh build/trans/HVC000164/data || exit 1
+fix_data_dir.sh: kept all 1 utterances.
+fix_data_dir.sh: old files are kept in build/trans/HVC000164/data/.backup
+steps/make_mfcc.sh --cmd "$train_cmd" --nj 1 build/trans/HVC000164/data build/trans/HVC000164/exp/make_mfcc build/trans/HVC000164/mfcc || exit 1
+steps/make_mfcc.sh --cmd run.pl --nj 1 build/trans/HVC000164/data build/trans/HVC000164/exp/make_mfcc build/trans/HVC000164/mfcc
+utils/validate_data_dir.sh: WARNING: you have only one speaker.  This probably a bad idea.
+   Search for the word 'bold' in http://kaldi.sourceforge.net/data_prep.html
+   for more information.
+utils/validate_data_dir.sh: Successfully validated data-directory build/trans/HVC000164/data
+steps/make_mfcc.sh: [info]: no segments file exists: assuming wav.scp indexed by utterance.
+Succeeded creating MFCC features for data
+steps/compute_cmvn_stats.sh build/trans/HVC000164/data build/trans/HVC000164/exp/make_mfcc build/trans/HVC000164/mfcc || exit 1
+steps/compute_cmvn_stats.sh build/trans/HVC000164/data build/trans/HVC000164/exp/make_mfcc build/trans/HVC000164/mfcc
+Succeeded creating CMVN stats for data
+utils/split_data.sh build/trans/HVC000164/data 1
+rm -rf build/trans/HVC000164/tri4a_mfcc
+mkdir -p build/trans/HVC000164/tri4a_mfcc/decode/log
+(cd build/trans/HVC000164/tri4a_mfcc; for f in /kaldi-trunk/egs/youtube/s5b/exp/tri4a/*; do ln -s $f; done; )
+./decode_fmllr.sh /kaldi-trunk/egs/youtube/s5b/exp/tri4a/graph_tgpr build/trans/HVC000164/data/split1/1 /kaldi-trunk/egs/youtube/s5b/exp/tri4a `dirname build/trans/HVC000164/tri4a_mfcc/decode/log` || exit 1
+./decode_fmllr.sh /kaldi-trunk/egs/youtube/s5b/exp/tri4a/graph_tgpr build/trans/HVC000164/data/split1/1 /kaldi-trunk/egs/youtube/s5b/exp/tri4a build/trans/HVC000164/tri4a_mfcc/decode
+dir = build/trans/HVC000164/tri4a_mfcc/decode  JOB = 1
+./decode_fmllr.sh: feature type is lda
+./decode_fmllr.sh: start si decoding
+./decode_fmllr.sh: getting first-pass fMLLR transforms.
+/kaldi-trunk/src/gmmbin/gmm-post-to-gpost /kaldi-trunk/egs/youtube/s5b/exp/tri4a/final.alimdl 'ark,s,cs:/kaldi-trunk/src/featbin/apply-cmvn  --utt2spk=ark:build/trans/HVC000164/data/split1/1/utt2spk scp:build/trans/HVC000164/data/split1/1/cmvn.scp scp:build/trans/HVC000164/data/split1/1/feats.scp ark:- | /kaldi-trunk/src/featbin/splice-feats --left-context=3 --right-context=3 ark:- ark:- | /kaldi-trunk/src/featbin/transform-feats /kaldi-trunk/egs/youtube/s5b/exp/tri4a/final.mat ark:- ark:- |' ark:- ark:- 
+/kaldi-trunk/src/bin/weight-silence-post 0.01 1:2:3:4:5:6:7:8:9:10:11:12:13:14:15 /kaldi-trunk/egs/youtube/s5b/exp/tri4a/final.alimdl ark:- ark:- 
+/kaldi-trunk/src/latbin/lattice-to-post --acoustic-scale=0.083333 ark:- ark:- 
+LOG (lattice-to-post:main():lattice-to-post.cc:105) Overall average log-like/frame is -4.82161 over 1317 frames.  Average acoustic like/frame is -4.70186
+LOG (lattice-to-post:main():lattice-to-post.cc:109) Done 1 lattices.
+/kaldi-trunk/src/featbin/apply-cmvn --utt2spk=ark:build/trans/HVC000164/data/split1/1/utt2spk scp:build/trans/HVC000164/data/split1/1/cmvn.scp scp:build/trans/HVC000164/data/split1/1/feats.scp ark:- 
+/kaldi-trunk/src/featbin/transform-feats /kaldi-trunk/egs/youtube/s5b/exp/tri4a/final.mat ark:- ark:- 
+LOG (apply-cmvn:main():apply-cmvn.cc:132) Applied cepstral mean normalization to 1 utterances, errors on 0
+/kaldi-trunk/src/featbin/splice-feats --left-context=3 --right-context=3 ark:- ark:- 
+LOG (transform-feats:main():transform-feats.cc:158) Overall average [pseudo-]logdet is -88.0643 over 1317 frames.
+LOG (transform-feats:main():transform-feats.cc:161) Applied transform to 1 utterances; 0 had errors.
+LOG (weight-silence-post:main():weight-silence-post.cc:95) Done 1 posteriors.
+LOG (gmm-post-to-gpost:main():gmm-post-to-gpost.cc:124) Done 1 files, 0 with no posteriors, 0 with other errors.
+LOG (gmm-post-to-gpost:main():gmm-post-to-gpost.cc:128) Overall avg like per frame (Gaussian only) = -56.2382 over 695.541 frames.
+LOG (gmm-post-to-gpost:main():gmm-post-to-gpost.cc:131) Done converting post to gpost
+./decode_fmllr.sh: doing main lattice generation phase
+./decode_fmllr.sh: estimating fMLLR transforms a second time.
+/kaldi-trunk/src/bin/weight-silence-post 0.01 1:2:3:4:5:6:7:8:9:10:11:12:13:14:15 /kaldi-trunk/egs/youtube/s5b/exp/tri4a/final.mdl ark:- ark:- 
+/kaldi-trunk/src/latbin/lattice-to-post --acoustic-scale=0.083333 ark:- ark:- 
+/kaldi-trunk/src/latbin/lattice-determinize-pruned --acoustic-scale=0.083333 --beam=4.0 'ark:gunzip -c build/trans/HVC000164/tri4a_mfcc/decode/lat.tmp.1.gz|' ark:- 
+LOG (lattice-determinize-pruned:main():lattice-determinize-pruned.cc:111) Done 1 lattices, determinization finished earlier than specified by the beam on 0 of these.
+LOG (lattice-to-post:main():lattice-to-post.cc:105) Overall average log-like/frame is -4.92021 over 1317 frames.  Average acoustic like/frame is -4.78114
+LOG (lattice-to-post:main():lattice-to-post.cc:109) Done 1 lattices.
+LOG (weight-silence-post:main():weight-silence-post.cc:95) Done 1 posteriors.
+./decode_fmllr.sh: doing a final pass of acoustic rescoring.
+/kaldi-trunk/src/gmmbin/gmm-rescore-lattice /kaldi-trunk/egs/youtube/s5b/exp/tri4a/final.mdl 'ark:gunzip -c build/trans/HVC000164/tri4a_mfcc/decode/lat.tmp.1.gz|' 'ark,s,cs:/kaldi-trunk/src/featbin/apply-cmvn  --utt2spk=ark:build/trans/HVC000164/data/split1/1/utt2spk scp:build/trans/HVC000164/data/split1/1/cmvn.scp scp:build/trans/HVC000164/data/split1/1/feats.scp ark:- | /kaldi-trunk/src/featbin/splice-feats --left-context=3 --right-context=3 ark:- ark:- | /kaldi-trunk/src/featbin/transform-feats /kaldi-trunk/egs/youtube/s5b/exp/tri4a/final.mat ark:- ark:- | /kaldi-trunk/src/featbin/transform-feats --utt2spk=ark:build/trans/HVC000164/data/split1/1/utt2spk ark:build/trans/HVC000164/tri4a_mfcc/decode/trans.1 ark:- ark:- |' ark:- 
+/kaldi-trunk/src/featbin/apply-cmvn --utt2spk=ark:build/trans/HVC000164/data/split1/1/utt2spk scp:build/trans/HVC000164/data/split1/1/cmvn.scp scp:build/trans/HVC000164/data/split1/1/feats.scp ark:- 
+/kaldi-trunk/src/featbin/transform-feats /kaldi-trunk/egs/youtube/s5b/exp/tri4a/final.mat ark:- ark:- 
+LOG (apply-cmvn:main():apply-cmvn.cc:132) Applied cepstral mean normalization to 1 utterances, errors on 0
+/kaldi-trunk/src/featbin/transform-feats --utt2spk=ark:build/trans/HVC000164/data/split1/1/utt2spk ark:build/trans/HVC000164/tri4a_mfcc/decode/trans.1 ark:- ark:- 
+/kaldi-trunk/src/featbin/splice-feats --left-context=3 --right-context=3 ark:- ark:- 
+LOG (transform-feats:main():transform-feats.cc:158) Overall average [pseudo-]logdet is -88.0643 over 1317 frames.
+LOG (transform-feats:main():transform-feats.cc:161) Applied transform to 1 utterances; 0 had errors.
+LOG (transform-feats:main():transform-feats.cc:158) Overall average logdet is 5.12056 over 1317 frames.
+LOG (transform-feats:main():transform-feats.cc:161) Applied transform to 1 utterances; 0 had errors.
+LOG (gmm-rescore-lattice:main():gmm-rescore-lattice.cc:103) Done 1 lattices with errors on 0, #frames is 1317
+/kaldi-trunk/src/latbin/lattice-scale --inv-acoustic-scale=12 'ark:gunzip -c build/trans/HVC000164/tri4a_mfcc/decode/lat.1.gz|' ark:- 
+/kaldi-trunk/src/latbin/lattice-add-penalty --word-ins-penalty=0.0 ark:- ark:- 
+LOG (lattice-scale:main():lattice-scale.cc:90) Done 1 lattices.
+LOG (lattice-add-penalty:main():lattice-add-penalty.cc:62) Done adding word insertion penalty to 1 lattices.
+(cd build/trans/HVC000164/tri4a_mfcc; ln -s /kaldi-trunk/egs/youtube/s5b/exp/tri4a/graph_tgpr/ graph)
+steps/get_ctm.sh `dirname build/trans/HVC000164/tri4a_mfcc` build/trans/HVC000164/tri4a_mfcc/graph build/trans/HVC000164/tri4a_mfcc/decode
+touch -m build/trans/HVC000164/tri4a_mfcc/decode/.ctm
+cat build/trans/HVC000164/tri4a_mfcc/decode/score_13/`dirname HVC000164/tri4a_mfcc`.ctm | perl -npe 's/(.*)-(S\d+)---(\S+)/\1_\3_\2/' > build/trans/HVC000164/tri4a_mfcc.segmented.splitw2.ctm
+cat build/trans/HVC000164/tri4a_mfcc.segmented.splitw2.ctm > build/trans/HVC000164/tri4a_mfcc.segmented.with-compounds.ctm
+cat build/trans/HVC000164/tri4a_mfcc.segmented.with-compounds.ctm > build/trans/HVC000164/tri4a_mfcc.segmented.ctm
+cat build/trans/HVC000164/tri4a_mfcc.segmented.ctm | python scripts/segmented-ctm-to-hyp.py > build/trans/HVC000164/tri4a_mfcc.hyp
+cat build/trans/HVC000164/tri4a_mfcc.hyp  | perl -npe 'use locale; s/ \(\S+\)/\./; $_= ucfirst();' > build/trans/HVC000164/tri4a_mfcc.txt
+mkdir -p `dirname build/output/HVC000164.txt`
+cp build/trans/HVC000164/tri4a_mfcc.txt build/output/HVC000164.txt
+cat build/trans/HVC000164/tri4a_mfcc.hyp | python scripts/hyp2trs.py > build/trans/HVC000164/tri4a_mfcc.trs
+mkdir -p `dirname build/output/HVC000164.trs`
+cp build/trans/HVC000164/tri4a_mfcc.trs build/output/HVC000164.trs
+cat build/trans/HVC000164/tri4a_mfcc.segmented.ctm | python scripts/unsegment-ctm.py | LC_ALL=C sort -k 1,1 -k 3,3n -k 4,4n > build/trans/HVC000164/tri4a_mfcc.ctm
+mkdir -p `dirname build/output/HVC000164.ctm`
+cp build/trans/HVC000164/tri4a_mfcc.ctm build/output/HVC000164.ctm
+cat build/trans/HVC000164/tri4a_mfcc.hyp | python scripts/hyp2sbv.py > build/trans/HVC000164/tri4a_mfcc.sbv
+mkdir -p `dirname build/output/HVC000164.sbv`
+cp build/trans/HVC000164/tri4a_mfcc.sbv build/output/HVC000164.sbv
+cat build/output/HVC000164.ctm | python scripts/ctm2srt.py > build/output/HVC000164.srt
+rm -rf build/audio/base/HVC000164.wav build/audio/segmented/HVC000164 build/diarization/HVC000164 build/trans/HVC000164
+Finished transcribing, result is in files ./build/output/HVC000164.{txt,trs,ctm,sbv,srt}
+result build/output/HVC000164.trs
