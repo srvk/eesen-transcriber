@@ -97,12 +97,12 @@ apt-get remove --purge xserver-xorg-video-nouveau
 
 apt-get install -y cuda
 
-# do not do the below.  copy it verbatim or get older version
-# using cryptic git commands that make no sense
 # install EESEN from github
       cd /home/vagrant
       git clone https://github.com/yajiemiao/eesen.git
       cd eesen
+# get older version of EESEN
+# using cryptic git commands
       git reset --hard bb0260eaebacd20d5121fbbbb0342678e3b058e1
       ln -s /kaldi-trunk/tools .
       cd src
@@ -130,10 +130,11 @@ sudo apt-get install -y xfce4-panel xterm
 apt-get install -y --no-install-recommends slurm-llnl
 /usr/sbin/create-munge-key
 mkdir /var/run/munge /var/run/slurm-llnl
-#mkdir /home/vagrant/tools/kaldi-offline-transcriber/Log
+echo 'OPTIONS="--syslog"' >> /etc/default/munge
+mkdir /home/vagrant/tools/eesen-offline-transcriber/Log
 cp /vagrant/slurm.conf /etc/slurm-llnl/slurm.conf
-#cp /vagrant/slurm.sh /home/vagrant/tools/kaldi-offline-transcriber/
-# gets overwritten when /home/vagrant/tools/kaldi-offline-transcriber-english.tgz unzips
+#cp /vagrant/slurm.sh /home/vagrant/tools/eesen-offline-transcriber/
+# got overwritten when /home/vagrant/tools/eesen-offline-transcriber.tgz unzipped
 cp /vagrant/reconf-slurm.sh /root/
 
 # This tricks the Vagrant shared folder default "/vagrant" into working
