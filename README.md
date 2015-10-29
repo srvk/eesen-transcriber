@@ -8,10 +8,15 @@ As a side effect, [LIUM speaker diarization](http://www-lium.univ-lemans.fr/diar
 
 The VM also exists as an Amazon Machine Image (AMI) [here](https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#LaunchInstanceWizard:ami=ami-1020c723).
 
-If you have gotten this far, it is assumed you have thes files checked out into this working directory:
+If you have gotten this far, it is assumed you have thes files checked out from GitHub into this working directory:
 
   README.md
+  README-transcriber
   Vagrantfile
+  reconf-slurm.sh
+	slurm.conf
+	slurm.sv.conf
+	supervisor.conf
 
 Assuming you have installed [Vagrant](http://vagrantup.com), to get started, do:
 
@@ -21,7 +26,7 @@ Lots of output will follow, including a lengthy download and install. When it fi
 
     vagrant ssh
 
-Once logged in, change directories to /home/vagrant/tools/eesen-offline-transcriber to find README instructions there. Note that the size of the VM is controlled by the Vagrantfile, and is rather small in RAM:
+Once logged in, change directories to /home/vagrant/tools/eesen-offline-transcriber to find README instructions there. (A copy of which is in README-transcriber) Note that the size of the VM is controlled by the Vagrantfile, and is rather small in RAM:
     vb.memory = 4096 # 4 GB
 This supports transcribing of small audio/video files. But for larger audio/video files (around an hour in length) you may need to crank this to more like 12 GB, which means your host computer will need around 16 GB.
 
