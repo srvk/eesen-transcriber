@@ -126,10 +126,12 @@ rm eesen-offline-transcriber.tgz
 # get XFCE, xterm
 sudo apt-get install -y xfce4-panel xterm
 
-# get SLURM stuff
+# get SLURM stuff                                                                                                                    
 apt-get install -y --no-install-recommends slurm-llnl
 /usr/sbin/create-munge-key
 mkdir /var/run/munge /var/run/slurm-llnl
+chown munge:root /var/run/munge                                                                                   
+chown slurm:slurm /var/run/slurm-llnl
 echo 'OPTIONS="--syslog"' >> /etc/default/munge
 mkdir /home/vagrant/tools/eesen-offline-transcriber/Log
 cp /vagrant/slurm.conf /etc/slurm-llnl/slurm.conf
