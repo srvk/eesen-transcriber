@@ -53,7 +53,7 @@ Vagrant.configure(2) do |config|
   #   vb.memory = "1024"
   # end
 config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, '--audio', 'pulse', '--audiocontroller', 'ac97'] # choices: hda sb16 ac97
+  #    vb.customize ["modifyvm", :id, '--audio', 'pulse', '--audiocontroller', 'ac97'] # choices: hda sb16 ac97
     vb.cpus = 4
     vb.memory = 4096 # 4 GB
 end
