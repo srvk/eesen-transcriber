@@ -22,7 +22,7 @@ Assuming you have installed [Vagrant](http://vagrantup.com), to get started, do:
 
     vagrant up
 
-Lots of output will follow, including a lengthy download and install. When it finishes, you will be able to log into the IVW machine with:
+Lots of output will follow, including a lengthy download and install. When it finishes, you will be able to log into the VM with:
 
     vagrant ssh
 
