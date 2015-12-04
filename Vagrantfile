@@ -126,6 +126,12 @@ wget -nv http://speechkitchen.org/vms/Data/eesen2-offline-transcriber.tgz
 tar zxvf eesen2-offline-transcriber.tgz
 rm eesen2-offline-transcriber.tgz
 
+# get EESEN language model building toolkit (see http://speechkitchen.org/kaldi-language-model-building/)                             
+cd /home/vagrant/eesen/asr_egs/tedlium-fbank                                                                                          
+wget -nv http://speechkitchen.org/vms/Data/eesen_lm_build.tgz                                                                         
+tar zxvf eesen_lm_build.tgz                                                                                                           
+rm eesen_lm_build.tgz  
+
 # get XFCE, xterm
 sudo apt-get install -y xfce4-panel xterm
 
