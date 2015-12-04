@@ -100,34 +100,31 @@ apt-get install -y cuda
 # install EESEN from github
       cd /home/vagrant
       git clone https://github.com/yajiemiao/eesen.git
+      ln -s eesen eesen-master
       cd eesen
 # get older version of EESEN
 # using cryptic git commands
-      git reset --hard bb0260eaebacd20d5121fbbbb0342678e3b058e1
+      git reset --hard 463eb754935511bbb0bbc4226593ef842ef3f7c4
+      # use pre-built Kaldi tools rather than re-build eesen's copies of them
+      mv tools tools-eesen
       ln -s /kaldi-trunk/tools .
       cd src
-      ./configure --use-cuda=yes
+      ./configure --use-cuda=yes --cudatk-dir=/usr/local/cuda
       make depend
       make
 
 # get models
-cd /home/vagrant/eesen/asr_egs
-wget -nv http://speechkitchen.org/vms/Data/tedlium-fbank.tgz
-tar zxvf tedlium-fbank.tgz
-rm tedlium-fbank.tgz
+cd /home/vagrant/eesen/asr_egs/tedlium
+wget -nv http://speechkitchen.org/vms/Data/v1.tgz
+tar zxvf v1.tgz
+rm v1.tgz
 
 # get eesen-offline-transcriber
 mkdir -p /home/vagrant/tools
 cd /home/vagrant/tools
-wget -nv http://speechkitchen.org/vms/Data/eesen-offline-transcriber.tgz
-tar zxvf eesen-offline-transcriber.tgz
-rm eesen-offline-transcriber.tgz
-
-# get EESEN language model building toolkit (see http://speechkitchen.org/kaldi-language-model-building/)
-cd /home/vagrant/eesen/asr_egs/tedlium-fbank
-wget -nv http://speechkitchen.org/vms/Data/eesen_lm_build.tgz
-tar zxvf eesen_lm_build.tgz
-rm eesen_lm_build.tgz
+wget -nv http://speechkitchen.org/vms/Data/eesen2-offline-transcriber.tgz
+tar zxvf eesen2-offline-transcriber.tgz
+rm eesen2-offline-transcriber.tgz
 
 # get XFCE, xterm
 sudo apt-get install -y xfce4-panel xterm
