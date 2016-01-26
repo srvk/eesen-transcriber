@@ -16,7 +16,7 @@ METHOD ONE – Directly call Makefile
 
     in the virtual machine, Path to the transcriber home folder, e.g:
 
-cd /home/vagrant/tools/kaldi-offline-transcriber
+cd /home/vagrant/tools/eesen-offline-transcriber
 
     Place an audio or video file to be decode into the src-audio folder, e.g:
 
@@ -53,7 +53,7 @@ the file mentioned above, or with the command:
 
 Where the output should look like this:
 
-  /home/vagrant/tools/kaldi-offline-transcriber/audio IN_CLOSE_WRITE /home/vagrant/tools/kaldi-offline-transcriber/run_logged.sh --txt result/$#.txt $@/$#
+  /home/vagrant/tools/eesen-offline-transcriber/audio IN_CLOSE_WRITE /home/vagrant/tools/eesen-offline-transcriber/run_logged.sh --txt result/$#.txt $@/$#
 
 This rule lists the folder being monitored, the event to
 trigger it (a file being closed/written), and a command to
@@ -68,7 +68,7 @@ This all runs in the VM, but we want the system to automatically
 transcribe files placed in a folder on the host computer, so we
 run a process to monitor the host folder. To kick things off, from
 the Unity panel on the VM desktop, click the goldfish icon. Or by hand,
-from the transcriber home folder (/home/vagrant/tools/kaldi-offline-transcriber) execute:
+from the transcriber home folder (/home/vagrant/tools/eesen-offline-transcriber) execute:
 
   ./run.sh
 
@@ -93,7 +93,7 @@ build     - working data for Kaldi offline transcriber
 conf      - configuration for Kaldi decoder
 lib    - Java libraries for diarization
 local    - scoring scripts
-Makefile – Rules for running kaldi-offline-transcriber
+Makefile – Rules for running eesen-offline-transcriber
 Makefile.options – Make overrides
 models – Models for diarization
 README – this file
@@ -113,7 +113,7 @@ watch.sh – script to watch host folder for new files and copy them to the loca
 
 SAMPLE OUTPUT LOG
 
-vagrant@myvagrantbox:~/tools/kaldi-offline-transcriber$ ./speech2text.sh /vagrant/Aladdin_Videos/HVC000164.mp4 
+vagrant@myvagrantbox:~/tools/eesen-offline-transcriber$ ./speech2text.sh /vagrant/Aladdin_Videos/HVC000164.mp4 
 ./speech2text.sh /vagrant/Aladdin_Videos/HVC000164.mp4
 mkdir -p `dirname build/audio/base/HVC000164.wav`
 avconv -i src-audio/HVC000164.mp4 -ac 1 -ar 16k -y build/audio/base/HVC000164.wav 
