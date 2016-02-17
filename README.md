@@ -32,3 +32,6 @@ This supports transcribing of small audio/video files. But for larger audio/vide
 
 ## Language Remodeling
 This VM now supports language model building according to instructions at SpeechKitchen.org: [Kaldi Language Model Building](http://speechkitchen.org/kaldi-language-model-building/)
+
+## Error Analysis
+If you ran the full TEDLIUM EESEN experiment, it is possible to use SpeechKitchen.org's [Error Analysis Page](http://speechkitchen.org/error-analysis-instructions-for-tedlium-vm/) to produce and view graphs and charts that let you play with the scoring data and visualize it in different ways.
