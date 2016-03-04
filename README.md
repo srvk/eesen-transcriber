@@ -19,6 +19,7 @@ If you have gotten this far, it is assumed you have thes files checked out from 
     README-transcriber
     README.md
     Vagrantfile
+    test2.mp3
     videobrowser.tgz
 
 Assuming you have installed [Vagrant](http://vagrantup.com), to get started, do:
