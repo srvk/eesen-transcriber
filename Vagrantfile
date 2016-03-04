@@ -12,7 +12,8 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "http://speechkitchen.org/boxes/mario-kaldi.box"
+  #config.vm.box = "http://speechkitchen.org/boxes/mario-kaldi.box"
+  config.vm.box = "ubuntu/trusty64"
   config.ssh.forward_x11 = true
 
   # Disable automatic box update checking. If you disable this, then
@@ -26,8 +27,10 @@ Vagrant.configure(2) do |config|
   # config.vm.network "forwarded_port", guest: 80, host: 8080
 
   # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
+  # using a specific IP. This happens to also be the IP address on which the
+  # files shared by Apache server can be accessed, from the host, e.g.
+  # http://192.168.33.11 will take you to the web root page (see synced folder below)
+  config.vm.network "private_network", ip: "192.168.33.11"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -38,7 +41,11 @@ Vagrant.configure(2) do |config|
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
+  # config.vm.synced_folder "../data", "/vagrant_data" # this was the default
+  # But we're going to share /vagrant in the VM as the default Apache2 location
+  # which will be configured to share a folder called "public" that should reside
+  # on the host in the working directory ("." here) where Vagrant is launched ("vagrant up")
+  config.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777", "fmode=666"]
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -73,106 +80,98 @@ end
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
-     sudo apt-get update -y
-     sudo apt-get upgrade
+    sudo apt-get update -y
+    sudo apt-get upgrade
 
-sudo apt-get install -y curl incron sox libsox-fmt-all libav-tools openjdk-6-jre 
+    sudo apt-get install -y git automake libtool autoconf patch subversion fuse\
+       libatlas-base-dev libatlas-dev liblapack-dev sox openjdk-6-jre libav-tools g++\
+       zlib1g-dev libsox-fmt-all apache2
 
-     # Add user to audio group. Otherwise aplay -l finds no hardware(!)
-     sudo usermod -a -G audio vagrant
+    # Add user to audio group. Otherwise aplay -l finds no hardware(!)
+    sudo usermod -a -G audio vagrant
 
-# Vagrant user owns everything!
-ln -fs /home/vagrant/kaldi-trunk /kaldi-trunk
-chown vagrant:vagrant /kaldi-trunk
+    # install srvk EESEN (does not require CUDA)
+    git clone https://github.com/srvk/eesen.git
+    cd eesen/tools
+    make -j `lscpu -p|grep -v "#"|wc -l`
+    cd ../src
+    ./configure --shared #--cudatk-dir=/opt/nvidia/cuda
+    make -j `lscpu -p|grep -v "#"|wc -l`
 
-# CUDA
-# first need to get nvidia deb (not yet available for Ubuntu > 12.04)           
-cd /home/vagrant                                                                
-wget -nv http://speechkitchen.org/vms/Data/cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
-dpkg -i cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
-rm cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
-apt-get update                                                                  
+    # get models
+    cd /home/vagrant/eesen/asr_egs/tedlium
+    wget -nv http://speechkitchen.org/vms/Data/v1.tgz
+    tar zxvf v1.tgz
+    rm v1.tgz
 
-apt-get remove --purge xserver-xorg-video-nouveau                           
+    # get eesen-offline-transcriber
+    mkdir -p /home/vagrant/tools
+    cd /home/vagrant/tools
+    git clone https://github.com/riebling/srvk-eesen-offline-transcriber
+    mv srvk-eesen-offline-transcriber eesen-offline-transcriber
 
-apt-get install -y cuda
+#    wget -nv http://speechkitchen.org/vms/Data/eesen2-offline-transcriber.tgz
+#    tar zxvf eesen2-offline-transcriber.tgz
+#    rm eesen2-offline-transcriber.tgz
 
-# install EESEN from github
-      cd /home/vagrant
-      git clone https://github.com/yajiemiao/eesen.git
-      ln -s eesen eesen-master
-      cd eesen
-# get older version of EESEN
-# using cryptic git commands
-      git reset --hard 463eb754935511bbb0bbc4226593ef842ef3f7c4
-      # use pre-built Kaldi tools rather than re-build eesen's copies of them
-      mv tools tools-eesen
-      ln -s /kaldi-trunk/tools .
-      cd src
-      ./configure --use-cuda=yes --cudatk-dir=/usr/local/cuda
-      make depend
-      make
+    mkdir -p /vagrant/build
+    ln -s /vagrant/build /home/vagrant/tools/eesen-offline-transcriber/build
+    
+    mkdir -p eesen-offline-transcriber/build
 
-# get models
-cd /home/vagrant/eesen/asr_egs/tedlium
-wget -nv http://speechkitchen.org/vms/Data/v1.tgz
-tar zxvf v1.tgz
-rm v1.tgz
+    # get XFCE, xterm if we want guest VM to open windows /menus on host
+    #sudo apt-get install -y xfce4-panel xterm
 
-# get eesen-offline-transcriber
-mkdir -p /home/vagrant/tools
-cd /home/vagrant/tools
-wget -nv http://speechkitchen.org/vms/Data/eesen2-offline-transcriber.tgz
-tar zxvf eesen2-offline-transcriber.tgz
-rm eesen2-offline-transcriber.tgz
+    # Apache setup
+    # unzip web root template
+    cd /vagrant
+    tar zxvf /vagrant/videobrowser.tgz
 
-# get EESEN language model building toolkit (see http://speechkitchen.org/kaldi-language-model-building/)                             
-cd /home/vagrant/eesen/asr_egs/tedlium
-wget -nv http://speechkitchen.org/vms/Data/eesen_lm_build.tgz                                                                         
-tar zxvf eesen_lm_build.tgz                                                                                                           
-rm eesen_lm_build.tgz  
+    # set the shared folder to be (mounted as a shared folder in the VM) "www"
+    sed -i 's|/var/www/html|/vagrant/www|g' /etc/apache2/sites-enabled/000-default.conf
+    sed -i 's|/var/www/|/vagrant/www/|g' /etc/apache2/apache2.conf
+    service apache2 restart
 
-# get XFCE, xterm
-sudo apt-get install -y xfce4-panel xterm
+    cp /vagrant/scripts/vids2web.sh /home/vagrant/tools/eesen-offline-transcriber
+    cp /vagrant/scripts/mkpages.sh /home/vagrant/tools/eesen-offline-transcriber
+    chmod +x /home/vagrant/tools/eesen-offline-transcriber/*.sh
 
-# get SLURM stuff                                                                                                                    
-apt-get install -y --no-install-recommends slurm-llnl
-/usr/sbin/create-munge-key
-mkdir /var/run/munge /var/run/slurm-llnl
-chown munge:root /var/run/munge                                                                                   
-chown slurm:slurm /var/run/slurm-llnl
-echo 'OPTIONS="--syslog"' >> /etc/default/munge
-mkdir /home/vagrant/tools/eesen-offline-transcriber/Log
-cp /vagrant/slurm.conf /etc/slurm-llnl/slurm.conf
-#cp /vagrant/slurm.sh /home/vagrant/tools/eesen-offline-transcriber/
-# got overwritten when /home/vagrant/tools/eesen-offline-transcriber.tgz unzipped
-cp /vagrant/reconf-slurm.sh /root/
+    # get SLURM stuff
+    apt-get install -y --no-install-recommends slurm-llnl < /usr/bin/yes
+    /usr/sbin/create-munge-key -f
+    mkdir -p /var/run/munge /var/run/slurm-llnl
+    chown munge:root /var/run/munge
+    chown slurm:slurm /var/run/slurm-llnl
+    echo 'OPTIONS="--syslog"' >> /etc/default/munge
+    cp /vagrant/conf/slurm.conf /etc/slurm-llnl/slurm.conf
+    cp /vagrant/conf/reconf-slurm.sh /root/
 
-# This tricks the Vagrant shared folder default "/vagrant" into working
-# like the VirtualBox shared folder default "/media/sf_transcriber", which is hard coded
-# into scripts slurm-watched.sh and watch.sh in the transcriber root
-ln -s /vagrant /media/sf_transcriber
+    # This tricks the Vagrant shared folder default "/vagrant" into working
+    # like the VirtualBox shared folder default "/media/sf_transcriber", which is hard coded
+    # into scripts slurm-watched.sh and watch.sh in the transcriber root
+    ln -s /vagrant /media/sf_transcriber
 
-# Supervisor stuff
-#
-# copy config first so it gets picked up
-cp /vagrant/supervisor.conf /etc/supervisor.conf
-mkdir -p /etc/supervisor/conf.d
-cp /vagrant/slurm.sv.conf /etc/supervisor/conf.d/
-# Now start service
-apt-get install -y supervisor
+    # Supervisor stuff
+    #
+    # copy config first so it gets picked up
+    cp /vagrant/conf/supervisor.conf /etc/supervisor.conf
+    mkdir -p /etc/supervisor/conf.d
+    cp /vagrant/conf/slurm.sv.conf /etc/supervisor/conf.d/
+    # Now start service
+    apt-get install -y supervisor
 
-# more misc. setup
-mkdir -p /vagrant/transcribe-in
-mkdir -p /vagrant/transcribe-out
-rm -f /home/vagrant/tools/eesen-offline-transcriber/result #other system
-# our system
-ln -s /vagrant/transcribe-out /home/vagrant/tools/eesen-offline-transcriber/result
+    # more misc. setup
+    mkdir -p /vagrant/transcribe-in
+    mkdir -p /vagrant/transcribe-out
 
-# Provisioning runs as root; we want files to be writable by 'vagrant'
-# only change might be if this is to run on Amazon AWS, where default user is 'ubuntu'
-# but the work-around is to create the vagrant user and keep all the above
-chown -R vagrant:vagrant /home/vagrant/ 
+    #rm -f /home/vagrant/tools/eesen-offline-transcriber/result #other system
+    # our system
+    #ln -s /vagrant/transcribe-out /home/vagrant/tools/eesen-offline-transcriber/result
+
+    # Provisioning runs as root; we want files to be writable by 'vagrant'
+    # only change might be if this is to run on Amazon AWS, where default user is 'ubuntu'
+    # but the work-around is to create the vagrant user and keep all the above
+    chown -R vagrant:vagrant /home/vagrant/ 
 
   SHELL
 
