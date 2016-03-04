@@ -1,0 +1,12 @@
+This is the root folder for the web page that shows lecture videos
+with subtitles and keyword search
+
+To update the content, make sure and put new .mp4 videos in the video/
+folder, and .srt subtitles (with matching base name) in the sub/ folder.
+
+Then run ./mkpages.sh to generate the main page (index.html) and player
+pages for each video (playXX.html, where XX is a video base name)
+This will create thumbnails and .vtt format subtitles for the web video
+player
+
+

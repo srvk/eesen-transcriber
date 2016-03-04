@@ -1,0 +1,433 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Video
+</title>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="includes/css/bootstrap.min.css">
+<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+
+<!--  theme -->
+<link rel="stylesheet" href="includes/css/style.css">
+<link rel="stylesheet" href="includes/css/responsive.css">
+<link rel="stylesheet" href="includes/css/lightstyle.css">
+<link rel="stylesheet" href="includes/css/jquery.fancybox.css">
+<link rel="stylesheet" href="includes/css/owl.carousel.css">
+<link rel="stylesheet" href="includes/css/ddsmoothmenu.css">
+<link rel="stylesheet" href="includes/css/animate.css">
+<link rel="stylesheet" href="includes/font-awesome/css/font-awesome.min.css">
+<script src="includes/js/modernizr.custom.js">
+</script>
+
+</head>
+
+<body class="home home-t-h">
+<div class="dark light">
+	<!--Start of Header-->
+	<header class="transparent">
+	<div class="main-header headerstyle-1">
+
+		<div class="container">
+		  <div class="row">
+		<!--Start of Logo-->
+			<div class="col-md-2 pull-left">
+			  <a href="index.html">Video Browser
+			  </a>
+			</div>
+		<!--End of Logo-->
+	
+		<!--Start of Menu-->
+			<div class="col-md-10 wr-menu-section">
+				<div class="header-search pull-right">
+			
+		
+				</div>
+				<nav class="pull-right primary-menu spo-primary-navigation ">
+					 <div id="navbar-collapse-1" class="navbar-collapse collapse ">
+					 <div id="templatemo_menu" class="ddsmoothmenu">
+						<ul>
+						  <li>
+						    <a href="index.html" >Home
+						    </a>
+						  </li>
+							
+						</ul>
+
+					 </div>
+					 </div>
+				</nav>
+			
+				<div class="clear">
+				</div>
+
+		   </div>
+		<!--End of Menu-->
+	
+		
+		  </div>
+		</div>
+	
+	</div>
+	</header>
+	<!--End of Header-->
+	<!--video-->
+	<div class="videos-wrapper no-pd">
+	<div class="player-main">
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-12 ">
+	<div class="demo-container">
+	<section class="ins-color">
+        <article class="video"> 
+          <video poster="thumbs/__VIDEONAME__.png" id="lectureVideo">
+        
+            <source src="video/__VIDEONAME__.mp4" type="video/mp4" id ="lectureSource">
+            <!-- Firefox3.6+ / Opera 10.5+ -->
+            <track label="English" kind="subtitles" srclang="en" src="sub/__VIDEONAME__.vtt" id="videoTrack" default>
+	
+            <div class="loading">
+              Sorry
+	      <br>
+              ... your browser doesn't support the video format!
+            </div>
+          </video>    
+        </article>
+	</section>
+	</div>
+
+	<!--video-->
+
+        <div id="shareit-wr" class="post-info">
+        <div class="addthis_sharing_toolbox">
+        </div>
+        </div>
+	<div class="post-content">
+	<div class="row">
+	<div class="col-sm-9">
+        <h2 id="lectureTitle">__VIDEONAME__.mp4
+          <br>
+	  <h5 id="speakerAndDate">00:00:00:000</h5>
+	</h2>
+	<br>
+	</div>
+	<hr>
+	</div>
+	</div>
+	</div>
+	</div>
+	</div>
+	</div>
+	</div>
+
+	<!--craousel-->
+	<section class="wow fadeInUp videos-wrapper" data-wow-delay="0.9s">
+		<div class="container">
+			<div class="row">
+					<div class="col-sm-12">
+						<div class="wr-newsletter orange-background text-center">
+							<form name="sentMessage" >
+				      <input type="keyword" id="email" placeholder="SEARCH FOR KEYWORD" onkeypress="return runScript(event)" />
+			</form>
+
+						</div>
+						<div class="clear">
+						</div>
+				</div>
+		
+				<div class="row">
+					<div class="col-sm-12 ">
+					  <h2>Search Results:
+					  </h2>
+					</div>
+		
+				</div>
+
+				<div class="post-comments">
+			<div class="col-sm-12" >
+		
+			
+						<ul class="spo-comments-list" id="searchResult">
+						</ul>
+			</div>
+		
+		<!--end comment section-->
+			</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="footer">
+	
+
+
+		<div class="footer-copyright">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+				  <p class="pull-left">&copy; Copyright Carnegie Mellon University
+				  </p>
+				  <p class="pull-right">2016
+				  </p>
+				</div>
+			</div>
+		</div>
+		</div>
+		<div class="clear">
+		</div>
+	<!--Footer Copyright-->
+
+	</section>
+	<!--End of Footer-->
+
+	 
+</div>
+
+<!-- Latest compiled and minified JavaScript --> 
+<script src="includes/js/jquery.js"></script> 
+<script src="includes/js/bootstrap.min.js"></script> 
+<script src="includes/js/owl.carousel.js"></script> 
+<script src="includes/js/jquery.fancybox.pack.js"></script>
+<script src="includes/js/nice-scroll.js"></script>  
+<script src="includes/js/ddsmoothmenu.js"></script> 
+<script src="includes/js/jquery.selectbox-0.2.js"></script> 
+<script src="includes/js/wow.js"></script> 
+<script src="includes/js/custom.js"></script> 
+<script type="text/javascript">
+
+function runScript(e) {
+    if (e.keyCode == 13) {
+        var tb = document.getElementById("email");
+        var keyword  = tb.value;
+        
+        parseScript(dataList,keyword);
+
+        return false;
+    }
+}
+
+dataList =[];
+var files = new Array();
+var fList = new Array();
+
+var pageExecute = {
+  fileContents:"Null",
+  pagePrefix:"Null",
+  slides:"Null",
+  init: function () {
+
+    // UGLY DIRTY NASTY HACK: retrieve the Apache file listing page for folder video/
+    // and then parse it to shreds to get list of .mp4 files
+    $.ajax({
+        url: "video",
+        async: false,
+        success: function (txt) {
+          files = txt.split('<a href="');
+          //console.log(files);
+        }
+    });
+
+    $(files).each(function () {
+      //console.log(this);
+      if (this.indexOf('.mp4') > -1) {
+        fList.push(this);
+        //console.log(this);
+      }
+    })
+
+    //console.log("length: "+fList.length);
+
+    for (i = 0; i < fList.length; i++) {
+      fList[i] = fList[i].split('">')[0];
+      fList[i] = fList[i].replace('"');
+
+      // Even though listing mp4 files, some may not have vtt files
+      // which is what we're looking for now
+      fList[i] = fList[i].replace(".mp4",".vtt");
+      //console.log(fList[i]);
+
+      // this should be a filename retrieved from directory listing like "10.vtt"
+      // what if the URL doesn't exist?
+      $.ajax({
+        url: "sub/"+fList[i],
+        async: false,
+        success: function (data){
+          dataList.push(data);
+          //console.log(data);
+        },
+        error: function (data){ // subtitle doesn't exist
+          console.log("ERROR");
+          dataList.push("0\n0:00:00.000 --> 0:00:00.000\n"+fList[i]+".mp4");
+        }
+      });
+
+      fList[i] = fList[i].replace(".vtt","");
+      //console.log(fList[i]);
+    }
+  }
+};
+
+function contains(string, word){
+	if(string.indexOf(word)===-1){
+		return false;
+	}
+	else{
+		return true;
+	}
+
+}
+
+function parseScript(dataList, keyword){
+
+  numOfLecture = dataList.length;
+  scriptByLecture= [];
+  for (a=0;a<numOfLecture;a++){
+    scriptLines = dataList[a].split("\n");
+    scriptByLecture.push(scriptLines);
+  }
+  lectureID = [];
+  timeStamp = [];
+  resultLine = [];
+
+  for (j=0;j<numOfLecture;j++){
+
+    for (i=0;i<scriptByLecture[j].length;i++){
+
+      lines = scriptByLecture[j];
+
+      if(contains(lines[i],keyword)){
+
+    //console.log("in video:",j);
+    lectureID.push(j);
+    //console.log(lines[i-1]);
+    timeStamp.push(lines[i-1]);
+    //console.log(lines[i]);
+    resultLine.push(lines[i]);
+    }
+  }
+ }
+ createHTML(lectureID, timeStamp, resultLine);
+}
+
+function createHTML(lectureID, timeStamp, resultLine){
+	var parent = document.getElementById("searchResult");
+
+	while(parent.firstChild){
+    	  parent.removeChild(parent.firstChild);
+	}
+	numOfResult = lectureID.length;
+	for (i=0;i<numOfResult;i++){
+		li = createResultDiv(lectureID[i],timeStamp[i],resultLine[i]);
+		parent.appendChild(li);
+		li ="";
+	}
+}
+
+function createResultDiv(lectureID1,timeStamp1,resultLine1){
+	var li = document.createElement('li');
+	li.className = "spo-comment media";
+	var div1 = document.createElement('div');
+	div1.className = "spo-comment-author-img cl";
+	var img1 = document.createElement('img');
+	img1.src = "img/play.png";
+	div1.appendChild(img1);
+
+	var lectureId  = fList[lectureID1];
+	var courseId = "0";
+	var hour = parseInt(timeStamp1[0]);
+	var min = parseInt(timeStamp1.substr(2,3));
+	var second =parseInt(timeStamp1.substr(5,6));
+
+	var lectureTime = hour*3600 + min*60 + second;
+
+	div1.setAttribute("onclick", "playVideo(0,\""+lectureId+"\","+lectureTime.toString()+")");
+        //console.log("onclick attribute: "+div1.getAttribute("onclick"));
+
+	var div2 = document.createElement('div');
+	div2.className = "bd";
+	h4 = document.createElement('h4');
+
+	//var lectureNum = lectureID1+1;
+        //console.log("innerHTML video: "+fList[lectureID1]+" + .mp4");
+	h4.innerHTML = "Video "+fList[lectureID1]+".mp4 :";
+	span = document.createElement('span');
+	span.className = "spo-comment-info pulled-right";
+	h42 = document.createElement('h4');
+	h42.innerHTML = timeStamp1;
+	span.appendChild(h42);
+	p  = document.createElement('p');
+	p.innerHTML = resultLine1;
+
+	div2.appendChild(h4);
+	div2.appendChild(span);
+	div2.appendChild(p);
+
+	li.appendChild(div1);
+	li.appendChild(div2);
+
+	//playVideo(0,"SIX",300);
+
+	return li;
+}
+
+// define metadata information for as global
+// varibales here
+// 
+// lectureTitleList
+// dateAndSpeakerList
+// courseList
+
+function playVideo (courseID,lectureID, timeOffset){
+
+	// change lecture
+	lectureSource = document.getElementById("lectureSource");
+	lectureSource.src = "video/"+ lectureID +".mp4";
+//console.log("PlayVideo:lectureSource.src:"+lectureSource.src);
+
+	// change subtitile
+	var track = document.getElementById("videoTrack");
+	track.src ="";
+	track.src = "sub/"+lectureID+".vtt";
+//console.log("PlayVideo:track.src:"+track.src);
+
+	// change title
+	title= document.getElementById("lectureTitle");
+	//title.innerHTML = lectureTitleList[lectureID-1];
+	title.innerHTML = lectureID + ".mp4";
+
+	// change date and speaker
+	speakerAndDate = document.getElementById("speakerAndDate");
+	//speakerAndDate.innerHTML = dateAndSpeakerList[lectureID];
+
+     var hours = parseInt( timeOffset / 3600 ) % 24;
+     var minutes = parseInt( timeOffset / 60 ) % 60;
+     var seconds = timeOffset % 60;
+
+     var result = (hours < 10 ? "0" + hours : hours) + ":" + 
+             (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+             (seconds  < 10 ? "0" + seconds : seconds) + ":000";
+
+	speakerAndDate.innerHTML = result.toString();
+
+	// change course name
+	//courseInfo = document.getElementById("courseInfo");
+	//courseInfo.innerHTML=courseList[courseID];
+	//courseInfo.innerHTML="Course"
+
+	video = document.getElementById('lectureVideo');
+	video.addEventListener('loadedmetadata', function() {
+  		this.currentTime = timeOffset;
+	}, false);
+	
+	video.load();
+	$('html,body').scrollTop(0);
+}
+</script>
+<script type="text/javascript">
+   pageExecute.init();
+</script>
+
+</body>
+</html>

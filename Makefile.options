@@ -1,0 +1,8 @@
+KALDI_ROOT=~/eesen
+EESEN_ROOT=~/eesen
+SEGMENTS=show.s.seg
+GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/data/lang_phn_test
+MODEL_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/exp/train_phn_l5_c320
+
+
+

@@ -1,0 +1,148 @@
+/*------------------------------------------------------------------
+[Table of contents]
+
+1. Common Styles for Fark
+		--body
+		
+		
+		
+		
+		
+-----*/	
+.light .pagination li a{color:#212121;}
+.light .wr-newsletter.orange-background{background:#cccccc;}
+.light article.video{background:#000;}
+.light #basic:before {background:#fff;}
+.light #basic:after {background:#fff;}
+.light .color-bg{background:#f2f2f2;}
+.light .light-background{background:#f2f2f2;}	
+ .light{
+	background-color:#fff;
+	color:#212121;
+}
+.light #basic{background:#f2f2f2;}
+ .light .primary-menu ul li a{
+	color:#212121;
+	font-weight: 600;
+}
+.light .ddsmoothmenu ul li ul{background:#fff;}
+.light .ddsmoothmenu ul li ul li{border-bottom:1px solid #f2f2f2;}
+.light .wr-channel-item-section{border-bottom:1px solid #f2f2f2;}
+.ddsmoothmenu ul li.parent-active  li.parent-active.active  a{background:#cccccc!important; color:#fff!important;}
+
+ .light .hd-aside-search{
+	max-width:11px;
+	cursor:pointer;
+	overflow:hidden;
+	color:transparent;
+	min-height:11px;
+	background:url(../images/aside-search.png);
+	background-repeat:no-repeat;
+}
+.header-search button{display:none;}
+
+.light .header-info{
+	background-color:#f2f2f2
+}
+.light .header-info p{
+	color:#333333;
+}
+
+.light .header-info p a{
+	color:#333333;
+}
+.light .header-info p a:hover{
+	color:#fff;
+}
+.light .header-info p a:hover :before{
+color:#333333;
+}
+
+.light .info-select select{
+	border:1px solid #f2f2f2;
+	background-color:#fff;
+	}
+	.light .sbHolder{
+  border: 1px solid #f2f2f2;
+  background-color: #fff;
+  }
+
+.light #footer{
+	background-color:#fff;
+	border-top:1px solid #f2f2f2;
+}
+.light .footer-widget-area{
+	border-top:1px solid #f2f2f2;
+	border-bottom:1px solid #f2f2f2;
+	margin-top:70px;
+
+}
+
+.light .footer-widget-area .title-block{
+	color:#adadad;
+}
+
+.light .footer-widget-area ul li a{
+	color:#212121;
+}
+.light .footer-copyright p{
+	color:#adadad;
+}
+
+.light .video-post-info p{
+	color:#333333;
+}
+
+.light .spo-comment .bd h4{color:#333333;
+text-transform:uppercase;
+font-size: 16px;
+font-weight: 700;
+float:left;
+padding-top: 0px;
+margin-top: 0px;}
+.light .post-content{border-bottom:1px solid #f2f2f2;border-top:1px solid #f2f2f2;}
+.light .spo-comments-list li{border-bottom:1px solid #f2f2f2;}
+.light .spo-comment-reply input{background-color:#333333; }
+.light .spo-comment-reply textarea{background-color:#333333; }
+.light .comment-button {background-color:#333333; background-image:url(../images/send.png);
+background-repeat: no-repeat;
+background-position: 50% 50%; }
+
+.light header{background: #fff;}
+
+.light .home-v2-content{border-top:1px solid #f2f2f2;
+border-bottom: 1px solid white;}
+
+
+.light .sbSelector, .light  .sbSelector:link, .light  .sbSelector:visited, .light  .sbSelector:hover {
+  color: #212121;
+  outline: none;
+  text-decoration: none;
+  line-height: 29px;
+  padding: 0px 0px 0px 14px;
+  left: 58px;
+  }
+  
+ .light .sbOptions {
+   border: 1px solid #f2f2f2;
+  background-color: #fff;
+  }
+  
+  .light .sbOptions a:link, .light .sbOptions a:visited {
+  color: #212121;
+  text-decoration: none;
+}
+
+.ddsmoothmenu ul li ul li a{
+padding:10px 3px;
+}
+.ddsmoothmenu ul li ul li a:hover{background:#cccccc; text-decoration:none;color: #212121;}
+
+a{color:#212121;}
+.video-post-info{  border-bottom: 1px solid #f2f2f2;}
+
+.light .header-info p a:hover{color:#ff3300;}
+
+.light .wr-faq-section dt{background-color:#cccccc}
+.wr-faq-section dt:after{border-left: 1px solid #f2f2f2}
+.light .spo-comment-reply input{color:#fff;}

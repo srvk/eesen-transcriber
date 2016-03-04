@@ -1,0 +1,119 @@
+.ddsmoothmenu{
+	
+}
+
+.ddsmoothmenu ul{
+padding-left: 0px;
+}
+
+/*Top level list items*/
+.ddsmoothmenu ul li{
+position:relative;
+}
+
+.ddsmoothmenu ul li a:hover{
+color: #ff3300;
+text-decoration: none;
+}
+
+/*Top level menu link items style*/
+.ddsmoothmenu ul li a {
+
+}
+
+* html .ddsmoothmenu ul li a{ /*IE6 hack to get sub menu links to behave correctly*/
+display: inline-block;
+}
+
+
+.ddsmoothmenu  ul li.current_page_item a,
+.ddsmoothmenu  ul li.current-menu-ancestor a,
+.ddsmoothmenu  ul li.current-menu-item a,
+.ddsmoothmenu  ul li.current-menu-parent a{
+	
+}
+
+/*1st sub level menu*/
+.ddsmoothmenu ul li ul{
+  background: #222222;
+  display: none;
+  width: 240px;
+  position: absolute;
+  top: 50px!important;
+  left: -81px!important;
+  padding:0px;
+}
+
+/*Sub level menu list items (undo style from Top level List Items)*/
+.ddsmoothmenu ul li ul li{
+display:inherit;
+clear:both;
+list-style:none;
+margin-left: 0px;
+width: 100%;
+border-bottom: 1px solid #474747;
+}
+.ddsmoothmenu ul li ul li:nth-last-child(1){
+border-bottom:none;
+}
+
+/*All subsequent sub menu levels vertical offset after 1st level sub menu */
+.ddsmoothmenu ul li ul li ul{
+top: 0;margin-left: 0%!important;
+}
+
+/* Sub level menu links style */
+.ddsmoothmenu ul li ul li a{
+padding-left: 10px;
+display:block;
+	
+}
+
+.ddsmoothmenu ul li ul li a:hover{
+color: #fff;
+}
+
+.ddsmoothmenu  ul li ul li.current_page_item a,
+.ddsmoothmenu  ul li ul li.current-menu-ancestor a,
+.ddsmoothmenu   ul li ul li.current-menu-item a,
+.ddsmoothmenu   ul li ul li.current-menu-parent a{
+	 
+}
+
+.ddsmoothmenu .sub-menu{width: auto!important;}
+
+/* Holly Hack for IE \*/
+* html .ddsmoothmenu{height: 1%;} /*Holly Hack for IE7 and below*/
+
+
+/* ######### CSS classes applied to down and right arrow images  ######### */
+
+.downarrowclass{
+position: absolute;
+top: 12px;
+right: 7px;
+}
+
+.rightarrowclass{
+position: absolute;
+top: 6px;
+right: 5px;
+}
+
+/* ######### CSS for shadow added to sub menus  ######### */
+
+.ddshadow{
+position: absolute;
+left: 0;
+top: 0;
+width: 0;
+height: 0;
+}
+
+.toplevelshadow{ /*shadow opacity. Doesn't work in IE*/
+opacity: 0.5;
+}
+
+
+/* menu end */
+
