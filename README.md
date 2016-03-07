@@ -36,6 +36,17 @@ You can also log directly into the VM with `vagrant ssh` and look around. For ex
     vb.memory = 4096 # 4 GB
 This supports transcribing of small audio/video files. But for larger audio/video files (around an hour in length) you may need to crank this to 8-12 GB, which means your host computer may need as much as 16 GB.
 
+## Cleaning Up
+
+Sometimes it helps to know how to shut down, as well as install and run a system. Two use cases come to mind.
+  1. Shutting down the virtual machine
+
+    vagrant halt
+
+  2. Cleaning files associated with the embedded VirtualBox virtual machine
+
+    vagrant destroy
+
 ## Language Remodeling
 This VM now supports language model building according to instructions at SpeechKitchen.org: [Kaldi Language Model Building](http://speechkitchen.org/kaldi-language-model-building/)
 
