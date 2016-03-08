@@ -9,8 +9,8 @@ From here the steps towards producing a test transcription are as follows:
 2. After much output and processing, the Vagrant VM should be provisioned and ready
 3. `vagrant ssh` to log into the VM
 4. `cd /home/vagrant/tools/eesen-offline-transcriber`
-5. Initiate transcription of the test file test1.wav with `./speech2text.sh test1.wav`
-6. Output should appear in `build/trans/test1.*`
+5. Initiate transcription of the test file test2.mp3 with `./speech2text.sh /vagrant/test2.mp3`
+6. Output should appear in `build/trans/test2.*`
 
 Here is what a successful run of the command should look like:
 ```
