@@ -32,7 +32,7 @@ Assuming you have installed [Vagrant](http://vagrantup.com), check out this repo
 
     vagrant up
 
-Lots of output will follow, including a lengthy download and install. When it finishes, you should be able to try out the transcriber with a test audio file (note that the file `./test2.mp3' is visible from inside the VM as `/vagrant/test2.mp3'):
+Lots of output will follow, including a lengthy download and install. When it finishes, you should be able to try out the transcriber with a test audio file (note that the file `./test2.mp3` is visible from inside the VM as `/vagrant/test2.mp3`):
 
     vagrant ssh -c "cd tools/eesen-offline-transcriber; ./vids2web.sh /vagrant/test2.mp3"
 
