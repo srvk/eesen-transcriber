@@ -1,0 +1,3 @@
+# let's not attempt to add all of Vagrant
+.vagrant
+
