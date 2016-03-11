@@ -62,3 +62,10 @@ This VM now supports language model building according to instructions at Speech
 ## Error Analysis
 
 If you ran the full TEDLIUM EESEN experiment, it is possible to use SpeechKitchen.org's [Error Analysis Page](http://speechkitchen.org/error-analysis-instructions-for-tedlium-vm/) to produce and view graphs and charts that let you play with the scoring data and visualize it in different ways.
+
+## Tips & Tricks
+
+You might want to install useful vagrant plugins such as [vagrant-aws](https://github.com/mitchellh/vagrant-aws) or [vagrant-vbguest](https://github.com/dotless-de/vagrant-vbguest) using
+
+    vagrant plugin install vagrant-vbguest
+
