@@ -28,11 +28,11 @@ If you have gotten this far, it is assumed you have these files checked out from
     test2.mp3
     videobrowser.tgz
 
-Assuming you have installed [Vagrant](http://vagrantup.com), open a shell in the eesen-transcriber folder and type:
+Assuming you have installed [Vagrant](http://vagrantup.com), check out this repository, open a shell in the eesen-transcriber folder and type:
 
     vagrant up
 
-Lots of output will follow, including a lengthy download and install. When it finishes, you should be able to try out the transcriber with a test audio file:
+Lots of output will follow, including a lengthy download and install. When it finishes, you should be able to try out the transcriber with a test audio file (note that the file `./test2.mp3' is visible from inside the VM as `/vagrant/test2.mp3'):
 
     vagrant ssh -c "cd tools/eesen-offline-transcriber; ./vids2web.sh /vagrant/test2.mp3"
 
