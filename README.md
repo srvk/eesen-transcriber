@@ -47,11 +47,12 @@ This supports transcribing of small audio/video files. But for larger audio/vide
 ## Cleaning Up
 
 Sometimes it helps to know how to shut down, as well as install and run a system. Two use cases come to mind.
-  1. Shutting down the virtual machine
+
+Shutting down the virtual machine:
 
     vagrant halt
 
-  2. Cleaning files associated with the embedded VirtualBox virtual machine (i.e. wipe everything)
+Cleaning files associated with the embedded VirtualBox virtual machine (i.e. wipe everything)
 
     vagrant destroy
 
