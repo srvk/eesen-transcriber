@@ -34,12 +34,15 @@ end
     sudo usermod -a -G audio vagrant
 
     # install srvk EESEN (does not require CUDA)
-    git clone https://github.com/srvk/eesen.git
+    git clone https://github.com/riebling/eesen.git
     cd eesen/tools
     make -j `lscpu -p|grep -v "#"|wc -l`
+    # remove a parameter from scoring script
+    sed -i 's/\ lur//g' sctk/bin/hubscr.pl
     cd ../src
     ./configure --shared #--cudatk-dir=/opt/nvidia/cuda
     make -j `lscpu -p|grep -v "#"|wc -l`
+
 
     # get models
     cd /home/vagrant/eesen/asr_egs/tedlium
