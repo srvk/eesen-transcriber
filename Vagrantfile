@@ -3,55 +3,14 @@
 
 Vagrant.configure("2") do |config|
 
-    config.vm.provider "aws" do |aws, override|
-      # Non-GPU AMI: Ubuntu ("Trusty") Server 14.04 LTS US-West region
-      aws.ami = "ami-663a6e0c"
-      aws.instance_type = "m2.medium"
-      config.vm.synced_folder ".", "/vagrant", type: "rsync"
-      #config.vm.synced_folder ".", "/vagrant", type: "nfs" #, nfs_version: 4, nfs_udp: false
-      override.vm.box = "dummy"
+  # Default provider is virtualbox
+  # if you want aws, you need to first
+  # from the shell do . env.sh
+    config.vm.box = "ubuntu/trusty64"
+    config.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777", "fmode=666"]
 
-      # it is assumed these environment variables are set in "env.sh"
-      aws.access_key_id = ENV['AWS_KEY']
-      aws.secret_access_key = ENV['AWS_SECRETKEY']
-      # your AWS access keys
-      aws.keypair_name = ENV['AWS_KEYPAIR']
-      # something like "ec2user" (ssh key pair)
-      override.ssh.username = "ec2-user"
-      override.ssh.private_key_path = ENV['AWS_PEM']
-      # something like "~/.ssh/ec2.pem"
-
-      aws.terminate_on_shutdown = "true"
-      aws.region = "us-east-1"
-
-      # Not sure which of these we want
-      # but we want to create a security group on AWS console that forwards
-      # HTTP if this VM is going to serve files as a video browser
-      #aws.security_groups = [ "CMU Addresses", "default" ]
-      #aws.subnet_id = "vpc-666c9a02"
-      aws.security_groups = "launch-wizard-1"
-
-      aws.region_config "us-east-1" do |region|
-        #region.spot_instance = true
-        region.spot_max_price = "0.1"
-      end
-
-      # this works around the error from AWS AMI vm on 'vagrant up':
-      #   No host IP was given to the Vagrant core NFS helper. This is
-      #   an internal error that should be reported as a bug.
-      override.nfs.functional = false
-
-    end
-
-    config.vm.provider "virtualbox" do |vbox, override|
-      # OSX audio
-      #vbox.customize ["modifyvm", :id, '--audio', 'coreaudio', '--audiocontroller', 'hda']
-      # linux audio
-      #vbox.customize ["modifyvm", :id, '--audio', 'pulse', '--audiocontroller', 'ac97']
-      config.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777", "fmode=666"]
-
-      override.vm.box = "ubuntu/trusty64"
-      override.ssh.forward_x11 = true
+    config.vm.provider "virtualbox" do |vbox|
+      config.ssh.forward_x11 = true
 
       # host-only network on which web browser serves files
       config.vm.network "private_network", ip: "192.168.56.101"
@@ -60,16 +19,56 @@ Vagrant.configure("2") do |config|
       vbox.memory = 8192
     end
 
+    config.vm.provider "aws" do |aws, override|
+
+      aws.tags["Name"] = "Eesen Transcriber"
+      aws.ami = "ami-663a6e0c" # Ubuntu ("Trusty") Server 14.04 LTS AMI - US-East region
+      aws.instance_type = "m3.xlarge"
+
+      override.vm.synced_folder ".", "/vagrant", type: "sshfs", ssh_username: ENV['USER'], ssh_port: "22", prompt_for_password: "true"
+
+      override.vm.box = "dummy"
+
+      # it is assumed these environment variables were set by ". env.sh"
+      aws.access_key_id = ENV['AWS_KEY']
+      aws.secret_access_key = ENV['AWS_SECRETKEY']
+      aws.keypair_name = ENV['AWS_KEYPAIR']
+      override.ssh.username = "ubuntu"
+      override.ssh.private_key_path = ENV['AWS_PEM']
+
+      aws.terminate_on_shutdown = "true"
+      aws.region = ENV['AWS_REGION']
+
+      # https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#SecurityGroups
+      # Edit the security group on AWS Console; Inbound tab, add the HTTP rule
+      aws.security_groups = "launch-wizard-1"
+
+      #aws.subnet_id = "vpc-666c9a02"
+      aws.region_config "us-east-1" do |region|
+        #region.spot_instance = true
+        region.spot_max_price = "0.1"
+      end
+
+      # this works around the error from AWS AMI vm on 'vagrant up':
+      #   No host IP was given to the Vagrant core NFS helper. This is
+      #   an internal error that should be reported as a bug.
+      #override.nfs.functional = false
+    end
+
   config.vm.provision "shell", inline: <<-SHELL
     sudo apt-get update -y
     sudo apt-get upgrade
 
-    sudo apt-get install -y git automake libtool autoconf patch subversion fuse\
+    if grep --quiet ubuntu /etc/passwd
+    then
+      user="ubuntu"
+    else
+      user="vagrant"
+    fi
+
+    sudo apt-get install -y git make automake libtool autoconf patch subversion fuse\
        libatlas-base-dev libatlas-dev liblapack-dev sox openjdk-6-jre libav-tools g++\
        zlib1g-dev libsox-fmt-all apache2 sshfs
-
-    # Add user to audio group. Otherwise aplay -l finds no hardware(!)
-    sudo usermod -a -G audio vagrant
 
     # install srvk EESEN (does not require CUDA)
     git clone https://github.com/riebling/eesen.git
@@ -81,23 +80,21 @@ Vagrant.configure("2") do |config|
     ./configure --shared #--cudatk-dir=/opt/nvidia/cuda
     make -j `lscpu -p|grep -v "#"|wc -l`
 
-
     # get models
-    cd /home/vagrant/eesen/asr_egs/tedlium
+    cd /home/${user}/eesen/asr_egs/tedlium
     wget -nv http://speechkitchen.org/vms/Data/v1.tgz
     tar zxvf v1.tgz
     rm v1.tgz
 
     # get eesen-offline-transcriber
-    mkdir -p /home/vagrant/tools
-    cd /home/vagrant/tools
+    mkdir -p /home/${user}/tools
+    cd /home/${user}/tools
     git clone https://github.com/riebling/srvk-eesen-offline-transcriber
     mv srvk-eesen-offline-transcriber eesen-offline-transcriber
 
+    # Results (and intermediate files) are placed on the shared host folder
     mkdir -p /vagrant/build
-    ln -s /vagrant/build /home/vagrant/tools/eesen-offline-transcriber/build
-    
-    mkdir -p eesen-offline-transcriber/build
+    ln -s /vagrant/build /home/${user}/tools/eesen-offline-transcriber/build
 
     # get XFCE, xterm if we want guest VM to open windows /menus on host
     #sudo apt-get install -y xfce4-panel xterm
@@ -112,9 +109,9 @@ Vagrant.configure("2") do |config|
     sed -i 's|/var/www/|/vagrant/www/|g' /etc/apache2/apache2.conf
     service apache2 restart
 
-    cp /vagrant/scripts/vids2web.sh /home/vagrant/tools/eesen-offline-transcriber
-    cp /vagrant/scripts/mkpages.sh /home/vagrant/tools/eesen-offline-transcriber
-    chmod +x /home/vagrant/tools/eesen-offline-transcriber/*.sh
+    cp /vagrant/scripts/vids2web.sh /home/${user}/tools/eesen-offline-transcriber
+    cp /vagrant/scripts/mkpages.sh /home/${user}/tools/eesen-offline-transcriber
+    chmod +x /home/${user}/tools/eesen-offline-transcriber/*.sh
 
     # get SLURM stuff
     apt-get install -y --no-install-recommends slurm-llnl < /usr/bin/yes
@@ -144,16 +141,14 @@ Vagrant.configure("2") do |config|
     #mkdir -p /vagrant/transcribe-in
     #mkdir -p /vagrant/transcribe-out
 
-    #rm -f /home/vagrant/tools/eesen-offline-transcriber/result #other system
+    #rm -f /home/${user}/tools/eesen-offline-transcriber/result #other system
     # our system
-    #ln -s /vagrant/transcribe-out /home/vagrant/tools/eesen-offline-transcriber/result
-
-    # configure sshfs here
+    #ln -s /vagrant/transcribe-out /home/${user}/tools/eesen-offline-transcriber/result
 
     # Provisioning runs as root; we want files to be writable by 'vagrant'
     # only change might be if this is to run on Amazon AWS, where default user is 'ubuntu'
     # but the work-around is to create the vagrant user and keep all the above
-    chown -R vagrant:vagrant /home/vagrant/ 
+    chown -R ${user}:${user} /home/${user}
 
   SHELL
 end
