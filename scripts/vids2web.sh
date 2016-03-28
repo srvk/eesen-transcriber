@@ -18,6 +18,7 @@ if [ $# -ne 1 ]; then
   exit
 fi
 
+home=~/tools/eesen-offline-transcriber
 filename=$(basename "$1")
 extension="${filename##*.}"
 basename="${filename%.*}"
@@ -36,9 +37,9 @@ else
 	-strict experimental /vagrant/www/video/$basename.mp4
 fi
 
-./speech2text.sh $1
+$home/speech2text.sh $1
 mkdir -p /vagrant/www/sub
 mkdir -p /vagrant/www/video
 
-cp build/output/$basename.srt /vagrant/www/sub
-bash mkpages.sh
+cp $home/build/output/$basename.srt /vagrant/www/sub
+bash $home/mkpages.sh
