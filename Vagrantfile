@@ -59,11 +59,11 @@ Vagrant.configure("2") do |config|
     sudo apt-get update -y
     sudo apt-get upgrade
 
-    if grep --quiet ubuntu /etc/passwd
+    if grep --quiet vagrant /etc/passwd
     then
-      user="ubuntu"
-    else
       user="vagrant"
+    else
+      user="ubuntu"
     fi
 
     sudo apt-get install -y git make automake libtool autoconf patch subversion fuse\
