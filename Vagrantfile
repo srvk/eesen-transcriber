@@ -93,8 +93,8 @@ Vagrant.configure("2") do |config|
     mv srvk-eesen-offline-transcriber eesen-offline-transcriber
     # make links to EESEN
     cd eesen-offline-transcriber
-    ln -s ~/eesen/asr_egs/tedlium/v1/steps .
-    ln -s ~/eesen/asr_egs/tedlium/v1/utils .
+    ln -s /home/${user}/eesen/asr_egs/tedlium/v1/steps .
+    ln -s /home/${user}/eesen/asr_egs/tedlium/v1/utils .
 
     # Results (and intermediate files) are placed on the shared host folder
     mkdir -p /vagrant/build
