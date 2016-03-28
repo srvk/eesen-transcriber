@@ -3,7 +3,7 @@
 #SBATCH -s
 #SBATCH -n 1
 #SBATCH -o /media/sf_transcriber/log/%j.log
-#SBATCH -D /home/vagrant/tools/kaldi-offline-transcriber
+#SBATCH -D /home/vagrant/tools/eesen-offline-transcriber
 #SBATCH --get-user-env
 # runs speech2text.sh in mode to produce all transcription formats
 
