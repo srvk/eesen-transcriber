@@ -1,7 +1,7 @@
 EESEN Offline Transcriber Quickstart guide
 
 The fastest way to get started with this system presumes you have already installed Vagrant,
-and have downloaded / cloned / unzipped this repistory to a local drive.
+and have downloaded / cloned / unzipped this repistory to a local folder.
 
 From here the steps towards producing a test transcription are as follows:
 
@@ -9,10 +9,10 @@ From here the steps towards producing a test transcription are as follows:
 2. After much output and processing, the Vagrant VM should be provisioned and ready
 3. `vagrant ssh` to log into the VM
 4. `cd /home/vagrant/tools/eesen-offline-transcriber`
-5. Initiate transcription of the test file test1.wav with `./speech2text.sh test1.wav`
-6. Output should appear in `build/trans/test1.*`
+5. Initiate transcription of the test file test2.mp3 with `./speech2text.sh /vagrant/test2.mp3`
+6. Output should appear in `build/output/test2.*`
 
-Here is what a successful run of the command should look like:
+Here is what a successful run of the command should look like (for a similar test file):
 ```
 ./speech2text.sh test1.wav
 mkdir -p `dirname build/audio/base/test1.wav`

@@ -81,6 +81,7 @@ Vagrant.configure("2") do |config|
     ./configure --shared #--cudatk-dir=/opt/nvidia/cuda
     make -j `lscpu -p|grep -v "#"|wc -l`
 
+
     # get models
     cd /home/vagrant/eesen/asr_egs/tedlium
     wget -nv http://speechkitchen.org/vms/Data/v1.tgz
