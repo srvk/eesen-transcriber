@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
 
       override.vm.synced_folder ".", "/vagrant", type: "sshfs", ssh_username: ENV['USER'], ssh_port: "22", prompt_for_password: "true"
 
-      override.vm.box = "dummy"
+      override.vm.box = "https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box"
 
       # it is assumed these environment variables were set by ". env.sh"
       aws.access_key_id = ENV['AWS_KEY']
