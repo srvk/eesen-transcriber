@@ -112,6 +112,8 @@ Vagrant.configure("2") do |config|
     cp /vagrant/scripts/vids2web.sh /home/${user}/tools/eesen-offline-transcriber
     cp /vagrant/scripts/mkpages.sh /home/${user}/tools/eesen-offline-transcriber
     chmod +x /home/${user}/tools/eesen-offline-transcriber/*.sh
+    # shorten paths used by vagrant ssh -c <command> commands
+    ln -s /home/${user}/tools/eesen-offline-transcriber /home/${user}/bin
 
     # get SLURM stuff
     apt-get install -y --no-install-recommends slurm-llnl < /usr/bin/yes
