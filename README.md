@@ -13,9 +13,10 @@ video format and produces transcriptions as subtitles, plain text, and more.
 Within transcriber, [LIUM speaker diarization](http://www-lium.univ-lemans.fr/diarization/doku.php/welcome) is performed.
 Lastly, the VM provides a video browser in a web page such that transcriptions appear as video subtitles, and are searchable by keyword across videos.
 
-An earlier version of this VM (without video browser) also exists as an Amazon Machine Image (AMI) [here](https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#LaunchInstanceWizard:ami=ami-1b637e7a). and [here](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:ami=ami-5a210a30) 
+This VM runs either locally with VirtualBox or remotely as an Amazon Machine Image on AWS.
 
-If you have gotten this far, it is assumed you have these files checked out from GitHub into this working directory:
+If you have gotten this far, it is assumed you have , check out this repository (`git clone http://github.com/srvk/eesen-transcriber`),
+and have opened a shell the `eesen-transcriber` working directory:
 
     conf/
     scripts/
@@ -28,19 +29,36 @@ If you have gotten this far, it is assumed you have these files checked out from
     test2.mp3
     videobrowser.tgz
 
-Assuming you have installed [Vagrant](http://vagrantup.com), check out this repository, open a shell in the eesen-transcriber folder and type:
+#### Running with VirtualBox Provider
+
+Assuming you have installed [Vagrant](http://vagrantup.com), from a shell in the eesen-transcriber folder type:
 
     vagrant up
 
-Lots of output will follow, including a lengthy download and install. When it finishes, you should be able to try out the transcriber with a test audio file (note that the file `./test2.mp3` is visible from inside the VM as `/vagrant/test2.mp3`):
+[Lots of output](https://github.com/srvk/eesen-transcriber/wiki/TranscribeOutput) will follow, as things download and install. When it finishes, make note of the URL where you can view results. You should then be able to try out the transcriber with the supplied test audio file (note that the file in the working directory `test2.mp3` is visible from inside the VM as `/vagrant/test2.mp3`):
 
-    vagrant ssh -c "cd tools/eesen-offline-transcriber; ./vids2web.sh /vagrant/test2.mp3"
+    vagrant ssh -c "vids2web.sh /vagrant/test2.mp3"
 
 For the video browser to work, it is assumed you have already [created a host-only network with VirtualBox](https://www.virtualbox.org/manual/ch06.html#network_hostonly). This will get picked up with an IP address specified in the Vagrantfile, viewable at URL `http://192.168.33.11` from the host computer.
 
-You can also log directly into the VM with `vagrant ssh` and look around. For example, change directories to /home/vagrant/tools/eesen-offline-transcriber to find README instructions there. (A copy of which is in README-transcriber) Note that the size of the VM is controlled by the Vagrantfile, and is rather small in RAM:
+#### Running with AWS Provider
 
-    vb.memory = 4096 # 4 GB
+Before provisioning the VM, you need to install the two Vagrant plugins:
+
+    vagrant plugin install vagrant-aws
+    vagrant plugin install vagrant-sshfs
+    
+You will also need to fill in details from your [Amazon Web Services] account by editing the file `env.sh` and then executing it as
+
+    . env.sh
+    
+Then you can run `vagrant up` as above, and when prompted, supply your login password to the machine on which you are currently running. This gives it to the VM so that it can use sshfs to mount your local filesystem as a Vagrant synced filesystem visible to the VM as `/vagrant`. Inputs as well as results reside here, on your host.
+
+#### Customizing the VM
+
+You can also log directly into the VM with `vagrant ssh` and look around. For example, change directories to /home/vagrant/tools/eesen-offline-transcriber to find README instructions there. (A copy of which is in README-transcriber) Note that the size of the VM is controlled by the Vagrantfile, and asks for 8GB RAM:
+
+    vbox.memory = 8192
 
 This supports transcribing of small audio/video files. But for larger audio/video files (around an hour in length) you may need to crank this to 8-12 GB, which means your host computer may need as much as 16 GB.
 
@@ -55,18 +73,23 @@ Shutting down the virtual machine:
 Cleaning files associated with the embedded VirtualBox virtual machine (i.e. wipe everything)
 
     vagrant destroy
+    
+This will not wipe out any local data or results, only the virtual machine (either VirtualBox locally or the AWS AMI)
 
-## Language Remodeling
+### Language Remodeling
 
 This VM now supports language model building according to instructions at SpeechKitchen.org: [Kaldi Language Model Building](http://speechkitchen.org/kaldi-language-model-building/)
 
-## Error Analysis
+### Error Analysis
 
-If you ran the full TEDLIUM EESEN experiment, it is possible to use SpeechKitchen.org's [Error Analysis Page](http://speechkitchen.org/error-analysis-instructions-for-tedlium-vm/) to produce and view graphs and charts that let you play with the scoring data and visualize it in different ways.
+If you ran the full EESEN TEDLIUM experiment (`~/eesen/asr_egs/tedlium/v1`), it is possible to use SpeechKitchen.org's [Error Analysis Page](http://speechkitchen.org/error-analysis-instructions-for-tedlium-vm/) to produce and view graphs and charts that let you play with the scoring data and visualize it in different ways. (Look near the end for EESEN specifics)
 
-## Tips & Tricks
+### Tips & Tricks
 
-You might want to install useful vagrant plugins such as [vagrant-aws](https://github.com/mitchellh/vagrant-aws) or [vagrant-vbguest](https://github.com/dotless-de/vagrant-vbguest) using
+You might want to install another useful vagrant plugin such as [vagrant-vbguest](https://github.com/dotless-de/vagrant-vbguest) which automatically synchronizes the VirtualBox Guest Additions in the VM
 
     vagrant plugin install vagrant-vbguest
 
+## License
+
+The Eesen software has been released under an Apache 2.0 license, the LIUM speaker diarization is GPL, but LIUM offers to work with you if that is too strict [LIUM license](http://www-lium.univ-lemans.fr/diarization/doku.php/licence). The Eesen transcriber uses and expands the Kaldi offline transcriber, which has been released under a very liberal license at [Kaldi Offline Transcriber license](https://github.com/alumae/kaldi-offline-transcriber/blob/master/LICENSE). The transcriber uses various other tools such as Atlas, Sox, FFMPEG that are being released as Ubuntu packages. Some of these have their own licenses, if one of them poses a problem, it would not be too hard to remove them specifically.
