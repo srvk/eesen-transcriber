@@ -15,23 +15,11 @@ Lastly, the VM provides a video browser in a web page such that transcriptions a
 
 This VM runs either locally with VirtualBox or remotely as an Amazon Machine Image on AWS.
 
-If you have gotten this far, it is assumed you have , check out this repository (`git clone http://github.com/srvk/eesen-transcriber`),
-and have opened a shell the `eesen-transcriber` working directory:
-
-    conf/
-    scripts/
-    www/
-    Makefile.options
-    README-quickstart.md
-    README-transcriber
-    README.md
-    Vagrantfile
-    test2.mp3
-    videobrowser.tgz
+If you have gotten this far, it is assumed you have cloned this repository (`git clone http://github.com/srvk/eesen-transcriber`), and have opened a shell in the `eesen-transcriber` working directory:
 
 #### Running with VirtualBox Provider
 
-Assuming you have installed [Vagrant](http://vagrantup.com), from a shell in the eesen-transcriber folder type:
+Assuming you have installed [Vagrant](http://vagrantup.com), from the shell in the `eesen-transcriber` folder type:
 
     vagrant up
 
@@ -50,7 +38,7 @@ Before provisioning the VM, you need to install the two Vagrant plugins:
     
 You will also need to fill in details from your [Amazon Web Services] account by editing the file `env.sh` and then executing it as
 
-    . env.sh
+    . aws.sh
     
 Then you can run `vagrant up` as above, and when prompted, supply your login password to the machine on which you are currently running. This gives it to the VM so that it can use sshfs to mount your local filesystem as a Vagrant synced filesystem visible to the VM as `/vagrant`. Inputs as well as results reside here, on your host.
 
