@@ -59,8 +59,7 @@ Vagrant.configure("2") do |config|
     sudo apt-get update -y
     sudo apt-get upgrade
 
-    if grep --quiet vagrant /etc/passwd
-    then
+    if grep --quiet vagrant /etc/passwd then
       user="vagrant"
     else
       user="ubuntu"
@@ -69,6 +68,15 @@ Vagrant.configure("2") do |config|
     sudo apt-get install -y git make automake libtool autoconf patch subversion fuse\
        libatlas-base-dev libatlas-dev liblapack-dev sox openjdk-6-jre libav-tools g++\
        zlib1g-dev libsox-fmt-all apache2 sshfs
+
+    # If you wish to train EESEN with a GPU machine, uncomment this section to install CUDA
+    #cd /home/${user}
+    #wget -nv http://speechkitchen.org/vms/Data/cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
+    #dpkg -i cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
+    #rm cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
+    #apt-get update                                                                  
+    #apt-get remove --purge xserver-xorg-video-nouveau                           
+    #apt-get install -y cuda
 
     # install srvk EESEN (does not require CUDA)
     git clone https://github.com/riebling/eesen.git
@@ -155,6 +163,15 @@ Vagrant.configure("2") do |config|
     # only change might be if this is to run on Amazon AWS, where default user is 'ubuntu'
     # but the work-around is to create the vagrant user and keep all the above
     chown -R ${user}:${user} /home/${user}
+
+    # Report web
+    if [ ${user} == vagrant ] 
+    then
+      echo "\n\n\nPoint your Chrome or Safari browser to http://192.168.56.101 to view transcription result videos"
+    else
+      publicIP=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`
+      echo "\n\n\nPoint your Chrome or Safari browser to http://${publicIP} to view transcription result videos"
+    fi
 
   SHELL
 end
