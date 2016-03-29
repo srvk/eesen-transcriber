@@ -56,13 +56,32 @@ Then you can run `vagrant up` as above, and when prompted, supply your login pas
 
 #### Customizing the VM
 
-You can also log directly into the VM with `vagrant ssh` and look around. For example, change directories to /home/vagrant/tools/eesen-offline-transcriber to find README instructions there. (A copy of which is in README-transcriber) Note that the size of the VM is controlled by the Vagrantfile, and asks for 8GB RAM:
+You can also log directly into the VM with `vagrant ssh` and look around. For example, change directories to `/home/vagrant/tools/eesen-offline-transcriber` to find README instructions there. You can initiate transcription from here with `speech2text.sh` and output will appear in `build/output`
 
+Note that the size of the VM is controlled by the Vagrantfile, and asks for 2 CPUs and 8GB RAM:
+
+    vbox.cpus = 2
     vbox.memory = 8192
 
-This supports transcribing of small audio/video files. But for larger audio/video files (around an hour in length) you may need to crank this to 8-12 GB, which means your host computer may need as much as 16 GB.
+This supports transcribing of audio/video files with small utterance lengths*. But for long utterances you may need to crank this to 8-12 GB, which means your host computer may need as much as 16 GB. Either you will need more RAM on the host you run locally using VirtualBox, or you will need to specify a more powerful `aws.instance.type` in Vagrantfile. [AWS Instance Types](https://aws.amazon.com/ec2/instance-types/)
 
-## Cleaning Up
+cd /home/vagrant/tools/eesen-offline-transcriber
+Initiate transcription of the test file test2.mp3 with ./speech2text.sh /vagrant/test2.mp3
+Output should appear in build/output/test2.*
+
+##### *Segmentation and Utterance Lengths
+
+Have a look in `Makefile` at the definition of `SEGMENTS`. The default segmentation strategy done by LIUM is set to "show.s.seg" in order use the maximum number of small segments. This variable is overridden in `Makefile.options`. If you want to provide your own segmentation, have a look at the `run-segmented.sh` script.
+
+##### Scoring
+
+Standard NIST sclite scoring is supported for data in .sph and .stm format via the `run-scored.sh` script.
+
+##### Models
+
+Also in `Makefile.options` are paths (in the VM) to the models used for decoding. If you create a new acoustic model (see Language Remodeling below), you will want to change this to point to your new model.
+
+### Cleaning Up
 
 Sometimes it helps to know how to shut down, as well as install and run a system. Two use cases come to mind.
 
