@@ -36,7 +36,7 @@ Before provisioning the VM, you need to install the two Vagrant plugins:
     vagrant plugin install vagrant-aws
     vagrant plugin install vagrant-sshfs
     
-You will also need to fill in details from your [Amazon Web Services] account by editing the file `env.sh` and then executing it as
+[Info about sshfs plugin](https://github.com/dustymabe/vagrant-sshfs) You will also need to fill in details from your Amazon Web Services account by editing the file `aws.sh` and then executing it as
 
     . aws.sh
     
