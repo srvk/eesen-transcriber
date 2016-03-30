@@ -115,7 +115,7 @@ Vagrant.configure("2") do |config|
     # Apache setup
     # unzip web root template
     cd /vagrant
-    tar --no-same-owner zxvf /vagrant/videobrowser.tgz
+    tar --no-same-owner -zxvf /vagrant/videobrowser.tgz
 
     # set the shared folder to be (mounted as a shared folder in the VM) "www"
     sed -i 's|/var/www/html|/vagrant/www|g' /etc/apache2/sites-enabled/000-default.conf
