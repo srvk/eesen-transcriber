@@ -23,11 +23,11 @@ Assuming you have installed [Vagrant](http://vagrantup.com), from the shell in t
 
     vagrant up
 
-[Lots of output](https://github.com/srvk/eesen-transcriber/wiki/TranscribeOutput) will follow, as things download and install. When it finishes, make note of the URL where you can view results. You should then be able to try out the transcriber with the supplied test audio file (note that the file in the working directory `test2.mp3` is visible from inside the VM as `/vagrant/test2.mp3`):
+[Lots of output](https://github.com/srvk/eesen-transcriber/wiki/TranscribeOutput) will follow, as things download and install. You should then be able to try out the transcriber with the supplied test audio file (note that the file in the working directory `test2.mp3` is visible from inside the VM as `/vagrant/test2.mp3`):
 
     vagrant ssh -c "vids2web.sh /vagrant/test2.mp3"
 
-For the video browser to work, it is assumed you have already [created a host-only network with VirtualBox](https://www.virtualbox.org/manual/ch06.html#network_hostonly). This will get picked up with an IP address specified in the Vagrantfile, viewable at URL `http://192.168.33.11` from the host computer.
+If all goes well you can see results at the URL `http://192.168.56.101` from the host computer.
 
 #### Running with AWS Provider
 
@@ -54,7 +54,8 @@ on Ubuntu Linux:
 
     sudo apt-get install ssh
 
-Then you can run `vagrant up` as above, and when prompted, supply the password for your current login account. This gives it to the VM so that it can use sshfs to mount the working directory of your local filesystem as a Vagrant synced filesystem visible from the VM as `/vagrant`. This allows inputs as well as results to reside on your host.
+Then you can run `vagrant up` as above, and when prompted, supply the password for your current login account. This gives it to the VM so that it can use sshfs to mount the working directory of your local filesystem as a Vagrant synced filesystem visible from the VM as `/vagrant`. This allows inputs as well as results to reside on your host. Make note of the URL given at the finish of `vagrant up` - if you transcribe the test audio as above,
+(`vagrant ssh -c "vids2web.sh /vagrant/test2.mp3"`) you should be able to see results at this URL.
 
 #### Customizing the VM
 
@@ -73,7 +74,30 @@ Output should appear in build/output/test2.*
 
 ##### *Segmentation and Utterance Lengths
 
-Have a look in `Makefile` at the definition of `SEGMENTS`. The default segmentation strategy done by LIUM is set to "show.s.seg" in order use the maximum number of small segments. This variable is overridden in `Makefile.options`. If you want to provide your own segmentation, have a look at the `run-segmented.sh` script.
+Have a look in `Makefile` at the definition of `SEGMENTS`. 
+```
+# Some audio produces no results (can't be segmented), or transcribes better
+# when segmented differently
+# Changing SEGMENTS to one of these values gives more flexibilty;
+# (see http://www-lium.univ-lemans.fr/diarization/doku.php/quick_start)
+#
+#    show.seg       : default - final segmentation with NCLR/CE clustering
+#    show.i.seg     : initial segmentation (entire audio)
+#    show.pms.seg   : sPeech/Music/Silence segmentation (don't use)
+#    show.s.seg     : GLR based segmentation, make Small segments
+#    show.l.seg     : linear clustering (merge only side by side segments)
+#    show.h.seg     : hierarchical clustering
+#    show.d.seg     : viterbi decoding
+#    show.adj.h.seg : boundaries adjusted
+#    show.flt1.seg  : filter spk segmentation according to pms segmentation
+#    show.flt2.seg  : filter spk segmentation according to pms segmentation
+#    show.spl.seg   : segments longer than 20 sec are split
+#    show.spl10.seg : segments longer than 10 sec are split
+#    show.g.seg     : the gender and the bandwith are detected
+SEGMENTS ?= show.seg
+```
+
+The default segmentation strategy done by LIUM is set to "show.s.seg" in order use the maximum number of small segments. This variable is overridden in `Makefile.options`. If you want to provide your own segmentation, have a look at the `run-segmented.sh` script.
 
 ##### Scoring
 
