@@ -23,11 +23,11 @@ Assuming you have installed [Vagrant](http://vagrantup.com), from the shell in t
 
     vagrant up
 
-[Lots of output](https://github.com/srvk/eesen-transcriber/wiki/TranscribeOutput) will follow, as things download and install. When it finishes, make note of the URL where you can view results. You should then be able to try out the transcriber with the supplied test audio file (note that the file in the working directory `test2.mp3` is visible from inside the VM as `/vagrant/test2.mp3`):
+[Lots of output](https://github.com/srvk/eesen-transcriber/wiki/TranscribeOutput) will follow, as things download and install. You should then be able to try out the transcriber with the supplied test audio file (note that the file in the working directory `test2.mp3` is visible from inside the VM as `/vagrant/test2.mp3`):
 
     vagrant ssh -c "vids2web.sh /vagrant/test2.mp3"
 
-For the video browser to work, it is assumed you have already [created a host-only network with VirtualBox](https://www.virtualbox.org/manual/ch06.html#network_hostonly). This will get picked up with an IP address specified in the Vagrantfile, viewable at URL `http://192.168.33.11` from the host computer.
+If all goes well you can see results at the URL `http://192.168.56.101` from the host computer.
 
 #### Running with AWS Provider
 
@@ -54,7 +54,8 @@ on Ubuntu Linux:
 
     sudo apt-get install ssh
 
-Then you can run `vagrant up` as above, and when prompted, supply the password for your current login account. This gives it to the VM so that it can use sshfs to mount the working directory of your local filesystem as a Vagrant synced filesystem visible from the VM as `/vagrant`. This allows inputs as well as results to reside on your host.
+Then you can run `vagrant up` as above, and when prompted, supply the password for your current login account. This gives it to the VM so that it can use sshfs to mount the working directory of your local filesystem as a Vagrant synced filesystem visible from the VM as `/vagrant`. This allows inputs as well as results to reside on your host. Make note of the URL given at the finish of `vagrant up` - if you transcribe the test audio as above,
+(`vagrant ssh -c "vids2web.sh /vagrant/test2.mp3"`) you should be able to see results at this URL.
 
 #### Customizing the VM
 
