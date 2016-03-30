@@ -74,7 +74,30 @@ Output should appear in build/output/test2.*
 
 ##### *Segmentation and Utterance Lengths
 
-Have a look in `Makefile` at the definition of `SEGMENTS`. The default segmentation strategy done by LIUM is set to "show.s.seg" in order use the maximum number of small segments. This variable is overridden in `Makefile.options`. If you want to provide your own segmentation, have a look at the `run-segmented.sh` script.
+Have a look in `Makefile` at the definition of `SEGMENTS`. 
+```
+# Some audio produces no results (can't be segmented), or transcribes better
+# when segmented differently
+# Changing SEGMENTS to one of these values gives more flexibilty;
+# (see http://www-lium.univ-lemans.fr/diarization/doku.php/quick_start)
+#
+#    show.seg       : default - final segmentation with NCLR/CE clustering
+#    show.i.seg     : initial segmentation (entire audio)
+#    show.pms.seg   : sPeech/Music/Silence segmentation (don't use)
+#    show.s.seg     : GLR based segmentation, make Small segments
+#    show.l.seg     : linear clustering (merge only side by side segments)
+#    show.h.seg     : hierarchical clustering
+#    show.d.seg     : viterbi decoding
+#    show.adj.h.seg : boundaries adjusted
+#    show.flt1.seg  : filter spk segmentation according to pms segmentation
+#    show.flt2.seg  : filter spk segmentation according to pms segmentation
+#    show.spl.seg   : segments longer than 20 sec are split
+#    show.spl10.seg : segments longer than 10 sec are split
+#    show.g.seg     : the gender and the bandwith are detected
+SEGMENTS ?= show.seg
+```
+
+The default segmentation strategy done by LIUM is set to "show.s.seg" in order use the maximum number of small segments. This variable is overridden in `Makefile.options`. If you want to provide your own segmentation, have a look at the `run-segmented.sh` script.
 
 ##### Scoring
 
