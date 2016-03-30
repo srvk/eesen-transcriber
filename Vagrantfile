@@ -59,7 +59,8 @@ Vagrant.configure("2") do |config|
     sudo apt-get update -y
     sudo apt-get upgrade
 
-    if grep --quiet vagrant /etc/passwd then
+    if grep --quiet vagrant /etc/passwd
+    then
       user="vagrant"
     else
       user="ubuntu"
