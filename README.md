@@ -31,6 +31,12 @@ For the video browser to work, it is assumed you have already [created a host-on
 
 #### Running with AWS Provider
 
+You will need to have already an [Amazon Web Services account](http://docs.aws.amazon.com/AmazonSimpleDB/latest/DeveloperGuide/AboutAWSAccounts.html). You will need to know several details about your account:
+
+  * The name and path of an [AWS public key pair](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html) used for secure login
+  * Your [AWS Key and Secret Key](http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSGettingStartedGuide/AWSCredentials.html)
+  * An [AWS Security Group](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html) configured for both SSH and HTTP
+
 Before provisioning the VM, you need to install the two Vagrant plugins:
 
     vagrant plugin install vagrant-aws
@@ -40,7 +46,15 @@ Before provisioning the VM, you need to install the two Vagrant plugins:
 
     . aws.sh
     
-Then you can run `vagrant up` as above, and when prompted, supply your login password to the machine on which you are currently running. This gives it to the VM so that it can use sshfs to mount your local filesystem as a Vagrant synced filesystem visible to the VM as `/vagrant`. Inputs as well as results reside here, on your host.
+You also need to enable SSH sharing of local files. On Mac OSX:
+
+    sudo systemsetup -setremotelogin on
+    
+on Ubuntu Linux:
+
+    sudo apt-get install ssh
+
+Then you can run `vagrant up` as above, and when prompted, supply the password for your current login account. This gives it to the VM so that it can use sshfs to mount the working directory of your local filesystem as a Vagrant synced filesystem visible from the VM as `/vagrant`. This allows inputs as well as results to reside on your host.
 
 #### Customizing the VM
 
