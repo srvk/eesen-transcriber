@@ -17,7 +17,7 @@ for f in `ls ${www}/video/*.mp4`; do
   extension="${filename##*.}"
   fn="${filename%.*}"
 
-  echo "processing video" $fn
+  echo "processing " $fn
 
   # create thumbnail - grab frame at the 1 minute mark
   avconv -i $www/video/$fn.mp4 -ss 00:00:57.000 -vframes 1 $www/thumbs/$fn.png 2>/dev/null

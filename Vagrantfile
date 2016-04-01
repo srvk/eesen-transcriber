@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
       # host-only network on which web browser serves files
       config.vm.network "private_network", ip: "192.168.56.101"
 
-      vbox.cpus = 2
+      vbox.cpus = 4
       vbox.memory = 8192
     end
 
@@ -107,6 +107,7 @@ Vagrant.configure("2") do |config|
 
     # Results (and intermediate files) are placed on the shared host folder
     mkdir -p /vagrant/build
+    mkdir -p /vagrant/transcribe_me
     ln -s /vagrant/build /home/${user}/tools/eesen-offline-transcriber/build
 
     # get XFCE, xterm if we want guest VM to open windows /menus on host
@@ -115,17 +116,17 @@ Vagrant.configure("2") do |config|
     # Apache setup
     # unzip web root template
     cd /vagrant
-    tar --no-same-owner zxvf /vagrant/videobrowser.tgz
+    tar --no-same-owner -zxvf /vagrant/videobrowser.tgz 
 
     # set the shared folder to be (mounted as a shared folder in the VM) "www"
     sed -i 's|/var/www/html|/vagrant/www|g' /etc/apache2/sites-enabled/000-default.conf
     sed -i 's|/var/www/|/vagrant/www/|g' /etc/apache2/apache2.conf
     service apache2 restart
 
-    cp /vagrant/scripts/vids2web.sh /home/${user}/tools/eesen-offline-transcriber
-    cp /vagrant/scripts/mkpages.sh /home/${user}/tools/eesen-offline-transcriber
+    cp /vagrant/scripts/{vids2web.sh,mkpages.sh,batch.sh,slurm.sh,watch.sh} /home/${user}/tools/eesen-offline-transcriber
     chmod +x /home/${user}/tools/eesen-offline-transcriber/*.sh
     # shorten paths used by vagrant ssh -c <command> commands
+    # by symlinking ~/bin to here
     ln -s /home/${user}/tools/eesen-offline-transcriber /home/${user}/bin
 
     # get SLURM stuff
@@ -137,14 +138,8 @@ Vagrant.configure("2") do |config|
     echo 'OPTIONS="--syslog"' >> /etc/default/munge
     cp /vagrant/conf/slurm.conf /etc/slurm-llnl/slurm.conf
     cp /vagrant/conf/reconf-slurm.sh /root/
-
-    # This tricks the Vagrant shared folder default "/vagrant" into working
-    # like the VirtualBox shared folder default "/media/sf_transcriber", which is hard coded
-    # into scripts slurm-watched.sh and watch.sh in the transcriber root
-    ln -s /vagrant /media/sf_transcriber
-
-    # Supervisor stuff
-    #
+    # 
+    # Supervisor stuff needed by slurm
     # copy config first so it gets picked up
     cp /vagrant/conf/supervisor.conf /etc/supervisor.conf
     mkdir -p /etc/supervisor/conf.d
@@ -152,26 +147,19 @@ Vagrant.configure("2") do |config|
     # Now start service
     apt-get install -y supervisor
 
-    # Do we still want transcriber to use these?
-    #mkdir -p /vagrant/transcribe-in
-    #mkdir -p /vagrant/transcribe-out
-
-    #rm -f /home/${user}/tools/eesen-offline-transcriber/result #other system
-    # our system
-    #ln -s /vagrant/transcribe-out /home/${user}/tools/eesen-offline-transcriber/result
-
-    # Provisioning runs as root; we want files to be writable by 'vagrant'
-    # only change might be if this is to run on Amazon AWS, where default user is 'ubuntu'
-    # but the work-around is to create the vagrant user and keep all the above
+    # Provisioning runs as root; we want files to belong to '${user}'
     chown -R ${user}:${user} /home/${user}
 
-    # Report web
+    # start monitoring watched folder?
+
+    # Handy info
+    echo "\n\n\n
     if [ ${user} == vagrant ] 
     then
-      echo "\n\n\nPoint your Chrome or Safari browser to http://192.168.56.101 to view transcription result videos"
+      echo "Point your Chrome or Safari browser to http://192.168.56.101 to view transcription result videos"
     else
       publicIP=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`
-      echo "\n\n\nPoint your Chrome or Safari browser to http://${publicIP} to view transcription result videos"
+      echo "Point your Chrome or Safari browser to http://${publicIP} to view transcription result videos"
     fi
 
   SHELL

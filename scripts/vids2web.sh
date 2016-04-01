@@ -14,17 +14,17 @@
 # Then view in Chrome browser on the IP found in Vagrantfile (nominally 192.168.33.11)
 
 if [ $# -ne 1 ]; then
-  echo "usage: ./vids2web.sh <video filename>"
+  echo "usage: ./vids2web.sh <audio/video filename>"
   exit
 fi
+
+PATH_TO_WATCH=/vagrant/transcribe_me
 
 home=~/tools/eesen-offline-transcriber
 filename=$(basename "$1")
 extension="${filename##*.}"
 basename="${filename%.*}"
-
-echo extension
-echo $extension
+folder=$(dirname "$1")
 
 # fake video from audio
 if [ $extension == ".mp4" -o $extension == ".MP4" ]; then
@@ -37,7 +37,12 @@ else
 	-strict experimental /vagrant/www/video/$basename.mp4
 fi
 
-$home/speech2text.sh $1
+# special case: if watched folder, drop a copy of the .ctm file alongside source
+if [ $folder == $PATH_TO_WATCH ]; then
+    $home/speech2text.sh --ctm $folder/$basename.ctm $1
+else
+    $home/speech2text.sh $1
+fi
 mkdir -p /vagrant/www/sub
 mkdir -p /vagrant/www/video
 
