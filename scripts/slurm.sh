@@ -11,6 +11,6 @@ filename=$(basename "$1")
 basename="${filename%.*}"
 
 echo "Starting at `date`, in `pwd`"
-vids2web.sh ${1}
+~/bin/vids2web.sh ${1}
 
 echo "Done ($?) at `date`, ran on $SLURM_NODELIST ($SLURM_NNODES, $SLURM_NPROCS)"
