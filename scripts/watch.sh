@@ -19,6 +19,5 @@ while true
 do
        touch  $TIMESTAMP
        sleep 10
-       echo -n "."
        find $PATH_TO_WATCH -type f -cnewer $TIMESTAMP -not -name "*.ctm" -exec ./batch.sh {} \;
 done
