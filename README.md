@@ -97,7 +97,7 @@ Have a look in `Makefile` at the definition of `SEGMENTS`.
 SEGMENTS ?= show.seg
 ```
 
-The default segmentation strategy done by LIUM is set to "show.s.seg" in order use the maximum number of small segments. This variable is overridden in `Makefile.options`. If you want to provide your own segmentation, have a look at the `run-segmented.sh` script.
+The default segmentation strategy done by LIUM is `show.seg` but we override it in `Makefile.options` to produce the maximum number of small segments. If you want to provide your own segmentation, have a look at the `run-segmented.sh` script. Briefly, it involves creating your own `show.seg`.
 
 ##### Scoring
 
