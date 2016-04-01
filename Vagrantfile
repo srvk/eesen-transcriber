@@ -153,7 +153,7 @@ Vagrant.configure("2") do |config|
     # start monitoring watched folder?
 
     # Handy info
-    echo "\n\n\n
+    echo "\n\n\n"
     if [ ${user} == vagrant ] 
     then
       echo "Point your Chrome or Safari browser to http://192.168.56.101 to view transcription result videos"
