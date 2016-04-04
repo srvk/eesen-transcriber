@@ -71,6 +71,7 @@ Vagrant.configure("2") do |config|
        zlib1g-dev libsox-fmt-all apache2 sshfs
 
     # If you wish to train EESEN with a GPU machine, uncomment this section to install CUDA
+    # also uncomment the line that mentions cudatk-dir in the EESEN install section below
     #cd /home/${user}
     #wget -nv http://speechkitchen.org/vms/Data/cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
     #dpkg -i cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
