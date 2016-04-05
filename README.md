@@ -72,6 +72,9 @@ cd /home/vagrant/tools/eesen-offline-transcriber
 Initiate transcription of the test file test2.mp3 with ./speech2text.sh /vagrant/test2.mp3
 Output should appear in build/output/test2.*
 
+#### Watched Folder Automatic Transcription
+The VM watches the shared host folder `transcribe_me`. Any files placed in this folder get queued as transcription jobs, and results appear in the same folder with extension `.ctm`. Results also automatically populate the video browser web page. Log files appear in `log/` by job number. If you want to disable this behavior, comment out the line in `Vagrantfile` that runs `watch.sh` before running `vagrant up`, or kill the watch.sh process in the VM.
+
 ##### *Segmentation and Utterance Lengths
 
 Have a look in `Makefile` at the definition of `SEGMENTS`. 
