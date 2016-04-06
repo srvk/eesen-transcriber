@@ -66,7 +66,7 @@ Note that the size of the VM is controlled by the Vagrantfile, and asks for 2 CP
     vbox.cpus = 2
     vbox.memory = 8192
 
-This supports transcribing of audio/video files with small utterance lengths*. But for long utterances you may need to crank this to 8-12 GB, which means your host computer may need as much as 16 GB. Either you will need more RAM on the host you run locally using VirtualBox, or you will need to specify a more powerful `aws.instance.type` in Vagrantfile. [AWS Instance Types](https://aws.amazon.com/ec2/instance-types/)
+This supports transcribing of audio/video files with small utterance lengths*. But for long utterances you may need to crank this to 8-12 GB, which means your host computer may need as much as 16 GB. Either you will need more RAM on the host you run locally using VirtualBox, or you will need to specify a more powerful `aws.instance.type` in Vagrantfile. [AWS Instance Types](https://aws.amazon.com/ec2/instance-types/) Similarly, if you want to transcribe several things in parallel, you'll want to crank up the number pf `Procs` at the end of `/etc/slurm-llnl/slurm.conf` as well as increasing the RAM allocated to the VM. An example, setting CPUs to 8, RAM to 30000, and Procs to 7 seems to work pretty well on a 32 GB 8 core host. 
 
 cd /home/vagrant/tools/eesen-offline-transcriber
 Initiate transcription of the test file test2.mp3 with ./speech2text.sh /vagrant/test2.mp3
