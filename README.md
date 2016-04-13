@@ -59,7 +59,7 @@ Then you can run `vagrant up` as above, and when prompted, supply the password f
 
 #### Customizing the VM
 
-You can also log directly into the VM with `vagrant ssh` and look around. For example, change directories to `/home/vagrant/tools/eesen-offline-transcriber` to find README instructions there. You can initiate transcription from here with `speech2text.sh` and output will appear in `build/output`
+You can also log directly into the VM with `vagrant ssh` and look around. For example, change directories to `/home/vagrant/tools/eesen-offline-transcriber` to find README instructions there. You can initiate transcription from here with `speech2text.sh` and output will appear in `build/output`. You can run scripts that queue several files for transcription with `batch.sh`
 
 Note that the size of the VM is controlled by the Vagrantfile, and asks for 2 CPUs and 8GB RAM:
 
@@ -71,6 +71,26 @@ This supports transcribing of audio/video files with small utterance lengths*. B
 cd /home/vagrant/tools/eesen-offline-transcriber
 Initiate transcription of the test file test2.mp3 with ./speech2text.sh /vagrant/test2.mp3
 Output should appear in build/output/test2.*
+
+#### 8khz Models
+
+We cannot give out the models trained on non-open-source data, but if you are able to obtain them, you can run the system in 8k mode, by changing the commented out lines in `Makefile.options`
+```
+# 8k models from switchboard
+ACWT=0.6
+GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/data/lang_phn_sw1_fsh_tgpr
+#GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/data/lang_phn_sw1_tg
+MODEL_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/exp/train_phn_l5_c320
+sample_rate=8k
+fbank=make_fbank_pitch
+
+# 16k models from tedlium
+#ACWT=0.7
+#GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/data/lang_phn
+#MODEL_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/exp/train_phn_l5_c320
+#sample_rate=16k
+#fbank=make_fbank
+```
 
 #### Watched Folder Automatic Transcription
 The VM watches the shared host folder `transcribe_me`. Any files placed in this folder get queued as transcription jobs, and results appear in the same folder with extension `.ctm`. Results also automatically populate the video browser web page. Log files appear in `log/` by job number. If you want to disable this behavior, comment out the line in `Vagrantfile` that runs `watch.sh` before running `vagrant up`, or kill the watch.sh process in the VM.
