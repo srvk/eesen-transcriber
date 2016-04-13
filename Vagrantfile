@@ -105,9 +105,7 @@ Vagrant.configure("2") do |config|
 
     # install language model building toolkit
     cd /home/${user}/eesen/asr_egs/tedlium/v1
-    wget http://speechkitchen.org/vms/Data/lm_build.tar.gz
-    tar zxvf lm_build.tar.gz
-    rm lm_build.tar.gz
+    git clone http://github.com/srvk/lm_build
 
     # get eesen-offline-transcriber
     mkdir -p /home/${user}/tools
