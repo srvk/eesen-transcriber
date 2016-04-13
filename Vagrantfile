@@ -7,7 +7,7 @@ Vagrant.configure("2") do |config|
   # if you want aws, you need to first
   # from the shell do . env.sh
     config.vm.box = "ubuntu/trusty64"
-    config.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777", "fmode=666"]
+    config.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777", "fmode=777"]
 
     config.vm.provider "virtualbox" do |vbox|
       config.ssh.forward_x11 = true

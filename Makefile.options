@@ -1,8 +1,18 @@
 KALDI_ROOT=~/eesen
 EESEN_ROOT=~/eesen
 SEGMENTS=show.s.seg
-GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/data/lang_phn_test
+
+# 8k models from switchboard
+#ACWT=0.6
+#GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/data/lang_phn_sw1_fsh_tgpr
+#GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/data/lang_phn_sw1_tg
+#MODEL_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/exp/train_phn_l5_c320
+#sample_rate=8k
+#fbank=make_fbank_pitch
+
+# 16k models from tedlium
+ACWT=0.7
+GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/data/lang_phn
 MODEL_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/exp/train_phn_l5_c320
-
-
-
+sample_rate=16k
+fbank=make_fbank
