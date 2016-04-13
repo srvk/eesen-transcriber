@@ -95,6 +95,11 @@ Vagrant.configure("2") do |config|
     wget -nv http://speechkitchen.org/vms/Data/v1.tgz
     tar zxvf v1.tgz
     rm v1.tgz
+    if [ -f /vagrant/swbd-v1-pitch.tgz ]
+    then
+       cd /home/${user}/eesen/asr_egs/swbd
+       tar zxvf /vagrant/swbd-v1-pitch.tgz
+    fi
 
     # get eesen-offline-transcriber
     mkdir -p /home/${user}/tools
