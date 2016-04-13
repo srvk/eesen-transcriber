@@ -4,8 +4,9 @@
 Vagrant.configure("2") do |config|
 
   # Default provider is virtualbox
-  # if you want aws, you need to first
-  # from the shell do . env.sh
+  # if you want aws, you need to first populate
+  # and then run e.g.
+  # . aws.sh
     config.vm.box = "ubuntu/trusty64"
     config.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777", "fmode=777"]
 
