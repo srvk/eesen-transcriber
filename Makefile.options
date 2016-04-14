@@ -11,7 +11,7 @@ SEGMENTS=show.s.seg
 
 # 16k models from tedlium
 ACWT=0.7
-GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/data/lang_phn
+GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/data/lang_phn_test
 MODEL_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/exp/train_phn_l5_c320
 sample_rate=16k
 fbank=make_fbank

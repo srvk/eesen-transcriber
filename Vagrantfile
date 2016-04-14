@@ -4,8 +4,9 @@
 Vagrant.configure("2") do |config|
 
   # Default provider is virtualbox
-  # if you want aws, you need to first
-  # from the shell do . env.sh
+  # if you want aws, you need to first populate
+  # and then run e.g.
+  # . aws.sh
     config.vm.box = "ubuntu/trusty64"
     config.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777", "fmode=777"]
 
@@ -95,11 +96,16 @@ Vagrant.configure("2") do |config|
     wget -nv http://speechkitchen.org/vms/Data/v1.tgz
     tar zxvf v1.tgz
     rm v1.tgz
+    # optionally get 8khz models
     if [ -f /vagrant/swbd-v1-pitch.tgz ]
     then
        cd /home/${user}/eesen/asr_egs/swbd
        tar zxvf /vagrant/swbd-v1-pitch.tgz
     fi
+
+    # install language model building toolkit
+    cd /home/${user}/eesen/asr_egs/tedlium/v1
+    git clone http://github.com/srvk/lm_build
 
     # get eesen-offline-transcriber
     mkdir -p /home/${user}/tools
