@@ -5,7 +5,6 @@ SEGMENTS=show.s.seg
 # 8k models from switchboard
 #ACWT=0.6
 #GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/data/lang_phn_sw1_fsh_tgpr
-#GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/data/lang_phn_sw1_tg
 #MODEL_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/exp/train_phn_l5_c320
 #sample_rate=8k
 #fbank=make_fbank_pitch
