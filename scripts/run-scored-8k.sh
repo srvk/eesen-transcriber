@@ -21,17 +21,17 @@ basename="${filename%.*}"
 
 mkdir -p build/audio/base
 
-sox $dirname/$basename.sph -c 1 -e signed-integer build/audio/base/$basename.wav rate -v 8k
+sox $dirname/$basename.sph -e signed-integer build/audio/base/$basename.wav rate -v 8k
 
 mkdir -p build/diarization/$basename
 
 # 8k
 #make segments from $1.stm
-grep -v "inter_segment_gap" $dirname/$basename.stm | grep -v ';;' | grep -e $basename | awk '{OFMT = "%.0f"; print $1,$2,$4*100,($5-$4)*100,"M S U S1"}' | sort -n -k3 > build/diarization/$basename/show.seg
+grep -v "inter_segment_gap" $dirname/$basename.stm | grep -v ';;' | grep -e $basename | awk '{OFMT = "%.0f"; print $1,$2,$4*100,($5-$4)*100,"M S U",$2}' > build/diarization/$basename/show.seg
 
 make SEGMENTS=show.seg build/trans/$basename/wav.scp
 
-cat $dirname/${basename}.stm | grep -e ${basename} | sed "s/${basename}_A/${basename}/" | sed "s/${basename}_B/${basename}/" | sed "s/${basename} A/${basename} 1/" | sed "s/${basename} B/${basename} 1/" | sort -n -k4  >  build/trans/${basename}/stm
+cat $dirname/${basename}.stm | grep -e ${basename}  >  build/trans/${basename}/stm
 cp glm build/trans/$basename
 
 make build/output/$basename.{txt,trs,ctm,sbv,srt,labels}
