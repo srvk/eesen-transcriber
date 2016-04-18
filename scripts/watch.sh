@@ -26,7 +26,7 @@ fi
 if [ $provider=="virtualbox" ]; then
 
     # use timestamps to compare processed files (won't work in AWS sshfs-ed folders)
-    TIMESTAMP=./.lastwatch
+    TIMESTAMP=$PATH_TO_WATCH/.lastwatch
     while true
     do
        touch -m $TIMESTAMP
