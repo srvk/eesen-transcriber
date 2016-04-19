@@ -31,7 +31,7 @@ if [ $provider=="virtualbox" ]; then
     do
        touch -m $TIMESTAMP
        sleep 10
-       find $PATH_TO_WATCH -type f -cnewer $TIMESTAMP -not -name "*.ctm" -exec ./batch.sh {} \;
+       find $PATH_TO_WATCH -type f -cnewer $TIMESTAMP -not -name "*.ctm" -not -name ".lastwatch" -exec ./batch.sh {} \;
     done
 
 else
