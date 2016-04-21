@@ -135,8 +135,6 @@ Vagrant.configure("2") do |config|
     sed -i 's|/var/www/|/vagrant/www/|g' /etc/apache2/apache2.conf
     service apache2 restart
 
-    cp /vagrant/scripts/{vids2web.sh,mkpages.sh,batch.sh,slurm.sh,watch.sh} /home/${user}/tools/eesen-offline-transcriber
-    chmod +x /home/${user}/tools/eesen-offline-transcriber/*.sh
     # shorten paths used by vagrant ssh -c <command> commands
     # by symlinking ~/bin to here
     ln -s /home/${user}/tools/eesen-offline-transcriber /home/${user}/bin
