@@ -120,7 +120,7 @@ Have a look in `Makefile` at the definition of `SEGMENTS`.
 SEGMENTS ?= show.seg
 ```
 
-The default segmentation strategy done by LIUM is `show.seg` but we override it in `Makefile.options` to produce the maximum number of small segments. If you want to provide your own segmentation, have a look at the `run-segmented.sh` script. Briefly, it involves creating your own `show.seg`.
+The default segmentation strategy done by LIUM is `show.seg` but we override it in `Makefile.options` to produce the maximum number of small segments, with the side effect of also assuming there is only one speaker.  (no per-speaker MFCC calculations) If you want to provide your own segmentation, have a look at the `run-segmented.sh` script. Briefly, it involves creating your own `show.seg`.
 
 ##### Scoring
 
