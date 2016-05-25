@@ -69,7 +69,7 @@ Vagrant.configure("2") do |config|
 
     sudo apt-get install -y git make automake libtool autoconf patch subversion fuse\
        libatlas-base-dev libatlas-dev liblapack-dev sox openjdk-6-jre libav-tools g++\
-       zlib1g-dev libsox-fmt-all apache2 sshfs
+       zlib1g-dev libsox-fmt-all apache2 sshfs praat
 
     # If you wish to train EESEN with a GPU machine, uncomment this section to install CUDA
     # also uncomment the line that mentions cudatk-dir in the EESEN install section below
