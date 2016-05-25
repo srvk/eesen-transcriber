@@ -69,7 +69,7 @@ Vagrant.configure("2") do |config|
 
     sudo apt-get install -y git make automake libtool autoconf patch subversion fuse\
        libatlas-base-dev libatlas-dev liblapack-dev sox openjdk-6-jre libav-tools g++\
-       zlib1g-dev libsox-fmt-all apache2 sshfs praat
+       zlib1g-dev libsox-fmt-all apache2 sshfs
 
     # If you wish to train EESEN with a GPU machine, uncomment this section to install CUDA
     # also uncomment the line that mentions cudatk-dir in the EESEN install section below
@@ -82,8 +82,10 @@ Vagrant.configure("2") do |config|
     #apt-get install -y cuda
 
     # install srvk EESEN (does not require CUDA)
-    git clone https://github.com/riebling/eesen.git
-    cd eesen/tools
+    git clone https://github.com/srvk/eesen
+    cd eesen
+    git reset --hard e3478ca
+    cd tools
     make -j `lscpu -p|grep -v "#"|wc -l`
     # remove a parameter from scoring script
     sed -i 's/\ lur//g' sctk/bin/hubscr.pl
@@ -93,9 +95,9 @@ Vagrant.configure("2") do |config|
 
     # get models
     cd /home/${user}/eesen/asr_egs/tedlium
-    wget -nv http://speechkitchen.org/vms/Data/v1.tgz
-    tar zxvf v1.tgz
-    rm v1.tgz
+    wget -nv http://speechkitchen.org/vms/Data/v2-30ms.tgz
+    tar zxvf v2-30ms.tgz
+    rm v2-30ms.tgz
     # optionally get 8khz models
     if [ -f /vagrant/swbd-v1-pitch.tgz ]
     then
@@ -104,7 +106,7 @@ Vagrant.configure("2") do |config|
     fi
 
     # install language model building toolkit
-    cd /home/${user}/eesen/asr_egs/tedlium/v1
+    cd /home/${user}/eesen/asr_egs/tedlium/v2-30ms
     git clone http://github.com/srvk/lm_build
 
     # get eesen-offline-transcriber
@@ -114,8 +116,8 @@ Vagrant.configure("2") do |config|
     mv srvk-eesen-offline-transcriber eesen-offline-transcriber
     # make links to EESEN
     cd eesen-offline-transcriber
-    ln -s /home/${user}/eesen/asr_egs/tedlium/v1/steps .
-    ln -s /home/${user}/eesen/asr_egs/tedlium/v1/utils .
+    ln -s /home/${user}/eesen/asr_egs/tedlium/v2-30ms/steps .
+    ln -s /home/${user}/eesen/asr_egs/tedlium/v2-30ms/utils .
 
     # Results (and intermediate files) are placed on the shared host folder
     mkdir -p /vagrant/{build,log,transcribe_me}
