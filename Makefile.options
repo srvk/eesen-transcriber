@@ -10,8 +10,16 @@ SEGMENTS=show.s.seg
 #fbank=make_fbank_pitch
 
 # 16k models from tedlium
+#ACWT=0.7
+#GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/data/lang_phn_test
+#GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/data/lang_phn_test_newlm
+#MODEL_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/exp/train_phn_l5_c320
+#sample_rate=16k
+#fbank=make_fbank
+
+# v2-30ms 16k models from tedlium-release2
 ACWT=0.7
-GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/data/lang_phn_test
-MODEL_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/exp/train_phn_l5_c320
+GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v2-30ms/data/lang_phn_test
+MODEL_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v2-30ms/exp/train_phn_l5_c320_v1s
 sample_rate=16k
 fbank=make_fbank
