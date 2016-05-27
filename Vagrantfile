@@ -84,7 +84,7 @@ Vagrant.configure("2") do |config|
     # install srvk EESEN (does not require CUDA)
     git clone https://github.com/srvk/eesen
     cd eesen
-    git reset --hard e3478ca
+    git reset --hard bfa1520
     cd tools
     make -j `lscpu -p|grep -v "#"|wc -l`
     # remove a parameter from scoring script
