@@ -93,18 +93,6 @@ Vagrant.configure("2") do |config|
     ./configure --shared #--cudatk-dir=/opt/nvidia/cuda
     make -j `lscpu -p|grep -v "#"|wc -l`
 
-    # get models
-    cd /home/${user}/eesen/asr_egs/tedlium
-    wget -nv http://speechkitchen.org/vms/Data/v2-30ms.tgz
-    tar zxvf v2-30ms.tgz
-    rm v2-30ms.tgz
-    # optionally get 8khz models
-    if [ -f /vagrant/swbd-v1-pitch.tgz ]
-    then
-       cd /home/${user}/eesen/asr_egs/swbd
-       tar zxvf /vagrant/swbd-v1-pitch.tgz
-    fi
-
     # install language model building toolkit
     cd /home/${user}/eesen/asr_egs/tedlium/v2-30ms
     git clone http://github.com/srvk/lm_build
@@ -118,6 +106,18 @@ Vagrant.configure("2") do |config|
     cd eesen-offline-transcriber
     ln -s /home/${user}/eesen/asr_egs/tedlium/v2-30ms/steps .
     ln -s /home/${user}/eesen/asr_egs/tedlium/v2-30ms/utils .
+
+    # get models
+    cd /home/${user}/eesen/asr_egs/tedlium
+    wget -nv http://speechkitchen.org/vms/Data/v2-30ms.tgz
+    tar zxvf v2-30ms.tgz
+    rm v2-30ms.tgz
+    # optionally get 8khz models
+    if [ -f /vagrant/swbd-v1-pitch.tgz ]
+    then
+       cd /home/${user}/eesen/asr_egs/swbd
+       tar zxvf /vagrant/swbd-v1-pitch.tgz
+    fi
 
     # Results (and intermediate files) are placed on the shared host folder
     mkdir -p /vagrant/{build,log,transcribe_me}
