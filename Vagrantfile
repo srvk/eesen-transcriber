@@ -84,7 +84,7 @@ Vagrant.configure("2") do |config|
     # install srvk EESEN (does not require CUDA)
     git clone https://github.com/srvk/eesen
     cd eesen
-    git reset --hard e3478ca
+    git reset --hard bfa1520
     cd tools
     make -j `lscpu -p|grep -v "#"|wc -l`
     # remove a parameter from scoring script
@@ -110,7 +110,7 @@ Vagrant.configure("2") do |config|
     # get models
     cd /home/${user}/eesen/asr_egs/tedlium
     wget -nv http://speechkitchen.org/vms/Data/v2-30ms.tgz
-    tar zxvf v2-30ms.tgz
+    tar zxvf v2-30ms.tgz --no-overwrite-dir 
     rm v2-30ms.tgz
     # optionally get 8khz models
     if [ -f /vagrant/swbd-v1-pitch.tgz ]
