@@ -110,7 +110,7 @@ Vagrant.configure("2") do |config|
     # get models
     cd /home/${user}/eesen/asr_egs/tedlium
     wget -nv http://speechkitchen.org/vms/Data/v2-30ms.tgz
-    tar zxvf v2-30ms.tgz --no-overwrite-dir 
+    tar zxvf v2-30ms.tgz --dereference
     rm v2-30ms.tgz
     # optionally get 8khz models
     if [ -f /vagrant/swbd-v1-pitch.tgz ]
