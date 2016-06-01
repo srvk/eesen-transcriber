@@ -6,7 +6,7 @@ If the results are not good, it is easy to update and change several parts of th
 
 Internally, the system
 uses [EESEN](https://github.com/yajiemiao/eesen) RNN-based decoding, trained on
-the [TED-LIUM](http://www-lium.univ-lemans.fr/en/content/ted-lium-corpus) dataset and the Cantab-TEDLIUM [language model](http://cantabresearch.com/cantab-TEDLIUM.tar) from
+the [TED-LIUM](http://www-lium.univ-lemans.fr/en/content/ted-lium-corpus) dataset and the Cantab-TEDLIUM [language model](http://cantabresearch.com/cantab-TEDLIUM.tar.bz2) from
 Cantab Research. In addition it includes an adapted version of
 Tanel Alumae's [Kaldi Offline Transcriber](https://github.com/alumae/kaldi-offline-transcriber) which accepts most any audio/
 video format and produces transcriptions as subtitles, plain text, and more.
@@ -124,11 +124,11 @@ The default segmentation strategy done by LIUM is `show.seg` but we override it 
 
 ##### Scoring
 
-Standard NIST sclite scoring is supported for data in .sph and .stm format via the `run-scored.sh` script.
+Standard NIST sclite scoring is supported for data in .sph and .stm format via the `run-scored.sh` and `run-scored-8k` scripts.
 
 ##### Models
 
-Also in `Makefile.options` are paths (in the VM) to the models used for decoding. If you create a new acoustic model (see Language Remodeling below), you will want to change this to point to your new model.
+Also in `Makefile.options` are paths (in the VM) to the models used for decoding. If you create a new acoustic model (see Language Remodeling below), you will want to change this to point to your new model. A recent update provides models designed for 30ms frame sizes, resulting in much faster decoding.  (3-7x real time, depending on configuration)
 
 ### Cleaning Up
 
