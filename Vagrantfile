@@ -100,7 +100,7 @@ Vagrant.configure("2") do |config|
     # get eesen-offline-transcriber
     mkdir -p /home/${user}/tools
     cd /home/${user}/tools
-    git clone https://github.com/riebling/srvk-eesen-offline-transcriber
+    git clone https://github.com/srvk/srvk-eesen-offline-transcriber
     mv srvk-eesen-offline-transcriber eesen-offline-transcriber
     # make links to EESEN
     cd eesen-offline-transcriber
