@@ -23,11 +23,16 @@ Assuming you have installed [Vagrant](http://vagrantup.com), from the shell in t
 
     vagrant up
 
-[Lots of output](https://github.com/srvk/eesen-transcriber/wiki/TranscribeOutput) will follow, as things download and install. You should then be able to try out the transcriber with the supplied test audio file (note that the file in the working directory `test2.mp3` is visible from inside the VM as `/vagrant/test2.mp3`):
+[Lots of output](https://github.com/srvk/eesen-transcriber/wiki/TranscribeOutput) will follow, as things download and install. If you get warnings about retrying, please be patient as this can take up to 5 minutes. You should then be able to try out the transcriber with the supplied test audio file: 
 
     vagrant ssh -c "vids2web.sh /vagrant/test2.mp3"
 
-If all goes well you can see results at the URL `http://192.168.56.101` from the host computer.
+If all goes well you can see results at the URL `http://192.168.56.101`. This is a shorthand way of running commands in the virtual machine (guest) from the host computer. It accomplishes the same thing as several steps:
+
+  * vagrant ssh (log into the virtual machine with automatic username/password pair vagrant/vagrant)
+  * cd tools/eesen-offline-transcriber (this is on the search path, the home folder for transcribing)
+  * ./vids2web /vagrant/test2.mp3 (transcribe audios/videos and update the web results page)
+You might notice that once logged into the VM, all the files that were in your host computer working directory are visible in the folder /vagrant. This is a convenient way to store many large input and output files on the host without running out of space in the guest VM. You will see several more scripts from the [transcriber core system](https://github.com/srvk/srvk-eesen-offline-transcriber/blob/master/README.md) which support different transcription methods.
 
 #### Running with AWS Provider
 
