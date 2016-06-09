@@ -19,9 +19,11 @@ SEGMENTS=show.seg
 
 # v2-30ms 16k models from tedlium-release2
 ACWT=0.8
-# switch to lang_phn_test_test_newlm for smaller LM, faster decode, less RAM
-GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v2-30ms/data/lang_phn_test
-#GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v2-30ms/data/lang_phn_test_test_newlm
+# choose one GRAPH_DIR below
+# smaller LM, faster decode, less RAM
+GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v2-30ms/data/lang_phn_test_test_newlm
+# most general, largest vocabulary/grammar
+#GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v2-30ms/data/lang_phn_test
 MODEL_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v2-30ms/exp/train_phn_l5_c320_v1s
 sample_rate=16k
 fbank=make_fbank
