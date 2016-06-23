@@ -100,7 +100,7 @@ fbank=make_fbank_pitch
 #### Watched Folder Automatic Transcription
 The VM watches the shared host folder `transcribe_me`. Any files placed in this folder get queued as transcription jobs, and results appear in the same folder with extension `.ctm`. Results also automatically populate the video browser web page. Log files appear in `log/` by job number. If you want to disable this behavior, comment out the line in `Vagrantfile` that runs `watch.sh` before running `vagrant up`, or kill the watch.sh process in the VM.
 
-##### *Segmentation and Utterance Lengths
+#### *Segmentation and Utterance Lengths
 
 Have a look in `Makefile` at the definition of `SEGMENTS`. 
 ```
@@ -125,7 +125,40 @@ Have a look in `Makefile` at the definition of `SEGMENTS`.
 SEGMENTS ?= show.seg
 ```
 
-The default segmentation strategy done by LIUM is `show.seg` but we override it in `Makefile.options` to produce the maximum number of small segments, with the side effect of also assuming there is only one speaker.  (no per-speaker MFCC calculations) If you want to provide your own segmentation, have a look at the `run-segmented.sh` script. Briefly, it involves creating your own `show.seg`.
+The default segmentation strategy done by LIUM is `show.seg` but we override it in `Makefile.options` with `show.s.seg` to produce the maximum number of small segments, with the side effect of also assuming there is only one speaker.  (no per-speaker MFCC calculations) 
+
+If you can provide your own segmentation, this may
+improve upon the default LIUM segmenter that is part of EESEN transcriber.
+
+1. In the VM, path to `/home/vagrant/tools/eesen-offline-transcriber`
+
+2. Place a video or audio file and segmentation file in folder `src-audio/`,
+with the same base name, and extensions `.mp4` and `.seg`, e.g. for base name `myvideo`
+
+  ```
+  src-audio/myvideo.mp4 
+  src-audio/myvideo.seg
+  ```
+The `.seg` segmentation file you provide must have the format:
+  ```
+  column 1 is the base name of the video file,
+  column 2 is always “1”
+  column 3 is the start time of the segment in hundredths of a second
+  column 4 is the length of the segment in hundredths of a second
+  the remaining columns are always “U U U S0″
+```
+  Example `myvideo.seg`:
+  ```
+  HVC037 1 4 2770 U U U S0 
+  HVC037 1 2774 490 U U U S0 
+  HVC037 1 3264 12930 U U U S0
+  ```
+3. Run the script `run-segmented.sh` with the basename as an argument, e.g.:
+  ```
+  ./run-segmented.sh HVC037
+  ```
+This produces by default subtitle `.srt` files. If you want another format, edit the
+last line of `run-segmented.sh` to specify the desired extension.
 
 ##### Scoring
 
