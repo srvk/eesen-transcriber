@@ -168,6 +168,17 @@ Standard NIST sclite scoring is supported for data in .sph and .stm format via t
 
 Also in `Makefile.options` are paths (in the VM) to the models used for decoding. If you create a new acoustic model (see Language Remodeling below), you will want to change this to point to your new model. A recent update provides models designed for 30ms frame sizes, resulting in much faster decoding.  (3-7x real time, depending on configuration)
 
+#### Improving Word Error Rate: rescoring with large LM
+
+It's possible to get a 2% relative improvement in WER by adding a step to the decoding process, which rescores intermediate lattices with a larger language model (Cantab 4-gram, unpruned). This adds extra time to the decoding process, and requires more memory, so it is commented out of the Vagrantfile by default. But if you have a 16 GB host machine, and the extra time, try it out. The data file `rescore-eesen.tgz` contains an extra program, the language model, and a patched Makefile.
+
+    ```
+    cd /home/${user}
+    wget http://speechkitchen.org/vms/Data/rescore-eesen.tgz
+    tar zxvf rescore-eesen.tgz
+    rm rescore-eesen.tgz    
+    ```
+
 ### Cleaning Up
 
 Sometimes it helps to know how to shut down, as well as install and run a system. Two use cases come to mind.
