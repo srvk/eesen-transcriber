@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
       # host-only network on which web browser serves files
       config.vm.network "private_network", ip: "192.168.56.101"
 
-      vbox.cpus = 4
+      vbox.cpus = 2
       vbox.memory = 8192
     end
 
@@ -118,6 +118,18 @@ Vagrant.configure("2") do |config|
        cd /home/${user}/eesen/asr_egs/swbd
        tar zxvf /vagrant/swbd-v1-pitch.tgz
     fi
+
+    # Uncomment for optional large language model rescoring
+    # produces generally 2% better Word Error Rates at the epense of longer
+    # decoding time and memory requirements (Requires guest VM setting
+    # of at least vbox.memory = 15360, just barely fitting in a 16GB host
+    # computer - with warnings)   Substitute "make -f Makefile.rescore"
+    # for "make" in run scripts (speech2text.sh and friends) to use this.
+    # 
+    # cd /home/${user}
+    # wget http://speechkitchen.org/vms/Data/rescore-eesen.tgz
+    # tar zxvf rescore-eesen.tgz
+    # rm rescore-eesen.tgz    
 
     # Results (and intermediate files) are placed on the shared host folder
     mkdir -p /vagrant/{build,log,transcribe_me}
