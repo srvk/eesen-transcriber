@@ -62,6 +62,14 @@ on Ubuntu Linux:
 Then you can run `vagrant up` as above, and when prompted, supply the password for your current login account. This gives it to the VM so that it can use sshfs to mount the working directory of your local filesystem as a Vagrant synced filesystem visible from the VM as `/vagrant`. This allows inputs as well as results to reside on your host. Make note of the URL given at the finish of `vagrant up` - if you transcribe the test audio as above,
 (`vagrant ssh -c "vids2web.sh /vagrant/test2.mp3"`) you should be able to see results at this URL.
 
+#### Video Browser with Keyword Search
+
+A web interface is provided for output created by the `vids2web` command in the VM. You can view it from the host computer in a Chrome or Safari web browser at the URL http://192.168.56.101/ (or if running on AWS, the URL shown after you first provisioned the machine with `vagrant up`)
+
+Content will be updated automatically when you run `vids2web.sh` from the path `~/tools/eesen-offline-transcriber` in the VM, or manually if you put new .mp4 videos in the `/vagrant/www/video/` folder, and .srt subtitles (with matching base name) in the `/vagrant/www/sub/` folder, and run `mkpages.sh`.
+
+`mkpages.sh` (re-)generates the main page (index.html) and player pages for each video (playXX.html, where XX is a video or audio file base name) This will create thumbnails and .vtt format subtitles for the web video player 
+
 #### Customizing the VM
 
 You can also log directly into the VM with `vagrant ssh` and look around. For example, change directories to `/home/vagrant/tools/eesen-offline-transcriber` to find README instructions there. You can initiate transcription from here with `speech2text.sh` and output will appear in `build/output`. You can run scripts that queue several files for transcription with `batch.sh`
