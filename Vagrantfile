@@ -182,9 +182,9 @@ Vagrant.configure("2") do |config|
     echo "------------------------------------------------------------"
     echo ""
     echo "  Watching folder [...]/eesen-transcriber/transcribe_me/"
-    echo "  for new files to transcribe."
-    echo "  *.ctm files will appear alongside the original audio files"
-    echo "  logs are in [...]/eesen-transcriber/log/"
+    echo "    for new files to transcribe. Output *.ctm files"
+    echo "    will appear alongside the original audio files"
+    echo "    logs are in [...]/eesen-transcriber/log/"
     echo ""
     echo "  Point your Chrome or Safari browser to "
     if [ ${user} == vagrant ] 
