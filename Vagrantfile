@@ -170,6 +170,14 @@ Vagrant.configure("2") do |config|
     cp /vagrant/conf/slurm.sv.conf /etc/supervisor/conf.d/
     # Now start service
     apt-get install -y supervisor
+    
+    # Turn off release upgrade messages
+    sed -i s/Prompt=lts/Prompt=never/ /etc/update-manager/release-upgrades
+    rm -f /var/lib/ubuntu-release-upgrader/*
+    /var/lib/ubuntu-release-upgrader/release-upgrade-motd
+    
+    # Silence error message from missing file
+    touch /home/${user}/.Xauthority 
 
     # Provisioning runs as root; we want files to belong to '${user}'
     chown -R ${user}:${user} /home/${user}
