@@ -178,16 +178,23 @@ Vagrant.configure("2") do |config|
     su ${user} -c "cd /home/${user}/tools/eesen-offline-transcriber && ./watch.sh >& /vagrant/log/watched.log &"
 
     # Handy info
-    echo "\n\n\nWatching folder (/vagrant/)transcribe_me/ for new files to transcribe...
-.ctm files will appear alongside source files
-logs are in (/vagrant/)log/"
+    echo ""
+    echo "------------------------------------------------------------"
+    echo ""
+    echo "  Watching folder [...]/eesen-transcriber/transcribe_me/"
+    echo "  for new files to transcribe."
+    echo "  *.ctm files will appear alongside the original audio files"
+    echo "  logs are in [...]/eesen-transcriber/log/"
+    echo ""
+    echo "  Point your Chrome or Safari browser to "
     if [ ${user} == vagrant ] 
     then
-      echo "Point your Chrome or Safari browser to http://192.168.56.101 to view transcription result videos"
+      echo "  http://192.168.56.101/ to view transcription results"
     else
       publicIP=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`
-      echo "Point your Chrome or Safari browser to http://${publicIP} to view transcription result videos"
+      echo "  http://${publicIP}/ to view transcription results"
     fi
-
+    echo ""
+    echo "------------------------------------------------------------"
   SHELL
 end
