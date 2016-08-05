@@ -139,10 +139,9 @@ Vagrant.configure("2") do |config|
     # get XFCE, xterm if we want guest VM to open windows /menus on host
     #sudo apt-get install -y xfce4-panel xterm
 
-    # Apache setup
-    # unzip web root template
+    # Apache: set up web content
     cd /vagrant
-    tar --no-same-owner -zxvf /vagrant/videobrowser.tgz 
+    git clone http://github.com/srvk/www
 
     # set the shared folder to be (mounted as a shared folder in the VM) "www"
     sed -i 's|/var/www/html|/vagrant/www|g' /etc/apache2/sites-enabled/000-default.conf
