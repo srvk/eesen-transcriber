@@ -13,6 +13,9 @@ Vagrant.configure("2") do |config|
     config.vm.provider "virtualbox" do |vbox|
       config.ssh.forward_x11 = true
 
+      # enable (uncomment) this for debugging output
+      #vbox.gui = true
+
       # host-only network on which web browser serves files
       config.vm.network "private_network", ip: "192.168.56.101"
 
