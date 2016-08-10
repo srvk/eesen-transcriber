@@ -23,11 +23,17 @@ Assuming you have installed [Vagrant](http://vagrantup.com), from the shell in t
 
     vagrant up
 
-[Lots of output](https://github.com/srvk/eesen-transcriber/wiki/TranscribeOutput) will follow, as things download and install. If you get warnings about retrying, please be patient as this can take up to 5 minutes. You should then be able to try out the transcriber with the supplied test audio file: 
+[Lots of output](https://github.com/srvk/eesen-transcriber/wiki/expected_output) will follow, as things download and install. If you get warnings about retrying, please be patient as this can take up to 5 minutes. You should then be able to try out the transcriber with the supplied test audio file: 
 
     vagrant ssh -c "vids2web.sh /vagrant/test2.mp3"
 
-If all goes well you can see results at the URL `http://192.168.56.101`. This is a shorthand way of running commands in the virtual machine (guest) from the host computer. It accomplishes the same thing as several steps:
+If all goes well, you can check output in the file `build/output/test2.txt` which should contain this:
+```
+Things will change in ways that they're fragile environment simply can't support and that leads to starvation it leads to uncertainty at leads unrest so the climate change is will be terrible for them
+```
+You can also see results in video form at the URL `http://192.168.56.101`.
+
+The syntax `vagrant ssh -c ...` is a shorthand way of running commands in the virtual machine (guest) from the host computer. It accomplishes the same thing as several steps:
 
   * vagrant ssh (log into the virtual machine with automatic username/password pair vagrant/vagrant)
   * cd tools/eesen-offline-transcriber (this is on the search path, the home folder for transcribing)
@@ -61,6 +67,14 @@ on Ubuntu Linux:
 
 Then you can run `vagrant up` as above, and when prompted, supply the password for your current login account. This gives it to the VM so that it can use sshfs to mount the working directory of your local filesystem as a Vagrant synced filesystem visible from the VM as `/vagrant`. This allows inputs as well as results to reside on your host. Make note of the URL given at the finish of `vagrant up` - if you transcribe the test audio as above,
 (`vagrant ssh -c "vids2web.sh /vagrant/test2.mp3"`) you should be able to see results at this URL.
+
+#### Video Browser with Keyword Search
+
+A web interface is provided for output created by the `vids2web` command in the VM. You can view it from the host computer in a Chrome or Safari web browser at the URL http://192.168.56.101/ (or if running on AWS, the URL shown after you first provisioned the machine with `vagrant up`)
+
+Content will be updated automatically when you run `vids2web.sh` from the path `~/tools/eesen-offline-transcriber` in the VM, or manually if you put new .mp4 videos in the `/vagrant/www/video/` folder, and .srt subtitles (with matching base name) in the `/vagrant/www/sub/` folder, and run `mkpages.sh`.
+
+`mkpages.sh` (re-)generates the main page (index.html) and player pages for each video (playXX.html, where XX is a video or audio file base name) This will create thumbnails and .vtt format subtitles for the web video player 
 
 #### Customizing the VM
 

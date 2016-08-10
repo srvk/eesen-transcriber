@@ -142,10 +142,9 @@ Vagrant.configure("2") do |config|
     # get XFCE, xterm if we want guest VM to open windows /menus on host
     #sudo apt-get install -y xfce4-panel xterm
 
-    # Apache setup
-    # unzip web root template
+    # Apache: set up web content
     cd /vagrant
-    tar --no-same-owner -zxvf /vagrant/videobrowser.tgz 
+    git clone http://github.com/srvk/www
 
     # set the shared folder to be (mounted as a shared folder in the VM) "www"
     sed -i 's|/var/www/html|/vagrant/www|g' /etc/apache2/sites-enabled/000-default.conf
@@ -185,9 +184,6 @@ Vagrant.configure("2") do |config|
     # Provisioning runs as root; we want files to belong to '${user}'
     chown -R ${user}:${user} /home/${user}
 
-    # start monitoring watched folder
-    su ${user} -c "cd /home/${user}/tools/eesen-offline-transcriber && ./watch.sh >& /vagrant/log/watched.log &"
-
     # Handy info
     echo ""
     echo "------------------------------------------------------------"
@@ -209,3 +205,17 @@ Vagrant.configure("2") do |config|
     echo "------------------------------------------------------------"
   SHELL
 end
+
+# always monitor watched folder
+  Vagrant.configure("2") do |config|
+  config.vm.provision "shell", run: "always", inline: <<-SHELL
+    if grep --quiet vagrant /etc/passwd
+    then
+      user="vagrant"
+    else
+      user="ubuntu"
+    fi
+
+    su ${user} -c "cd /home/${user}/tools/eesen-offline-transcriber && ./watch.sh >& /vagrant/log/watched.log &"
+SHELL
+  end
