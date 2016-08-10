@@ -3,10 +3,12 @@
 
 Vagrant.configure("2") do |config|
 
-  # Default provider is virtualbox
-  # if you want aws, you need to first populate
-  # and then run e.g.
-  # . aws.sh
+    # Default provider is VirtualBox!
+    # If you want AWS, you need to populate and run e.g.
+    #   . aws.sh; vagrant up --provider aws
+    # Make sure you don't check in aws.sh (maybe make a copy with your "secret" data)
+    # Before that, do
+    #   vagrant plugin install vagrant-aws; vagrant plugin install vagrant-sshfs
     config.vm.box = "ubuntu/trusty64"
     config.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777", "fmode=777"]
 

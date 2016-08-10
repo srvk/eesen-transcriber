@@ -1,3 +1,9 @@
 # let's not attempt to add all of Vagrant
 .vagrant
 
+# let's not mention the directories that we will create as well
+build
+erroranalysis
+log
+transcribe_me
+www
