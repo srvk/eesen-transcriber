@@ -178,7 +178,7 @@ Vagrant.configure("2") do |config|
     # Turn off release upgrade messages
     sed -i s/Prompt=lts/Prompt=never/ /etc/update-manager/release-upgrades
     rm -f /var/lib/ubuntu-release-upgrader/*
-    /var/lib/ubuntu-release-upgrader/release-upgrade-motd
+    /usr/lib/ubuntu-release-upgrader/release-upgrade-motd
     
     # Silence error message from missing file
     touch /home/${user}/.Xauthority 
