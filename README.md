@@ -102,13 +102,6 @@ GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/data/lang_phn_sw1_fsh_tgpr
 MODEL_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/exp/train_phn_l5_c320
 sample_rate=8k
 fbank=make_fbank_pitch
-
-# 16k models from tedlium
-#ACWT=0.7
-#GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/data/lang_phn
-#MODEL_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v1/exp/train_phn_l5_c320
-#sample_rate=16k
-#fbank=make_fbank
 ```
 
 #### Watched Folder Automatic Transcription
@@ -192,6 +185,51 @@ It's possible to get a 2% relative improvement in WER by adding a step to the de
     tar zxvf rescore-eesen.tgz
     rm rescore-eesen.tgz    
     ```
+### Word Level Alignments
+To get word-level alignments for transcriptions produced by the transcriber, first transcribe something. Let's use the example, test2.mp3. Then run the script run_align.sh
+
+```
+./speech2text /vagrant/test2.mp3
+./run_align.sh test2
+```
+Results will be placed in the working folder for the file transcribed, in this case `build/trans/test2`, in a subfolder `align` in the file `ali` so for example:
+```
+cat build/trans/test2/align/ali
+test2-S0---0000.090-0013.900 1 0.00 0.24 things 
+test2-S0---0000.090-0013.900 1 0.24 0.07 will 
+test2-S0---0000.090-0013.900 1 0.31 0.16 change 
+test2-S0---0000.090-0013.900 1 0.47 0.05 in 
+test2-S0---0000.090-0013.900 1 0.52 0.28 ways 
+test2-S0---0000.090-0013.900 1 0.80 0.05 that 
+test2-S0---0000.090-0013.900 1 0.85 0.09 they're 
+test2-S0---0000.090-0013.900 1 0.94 0.20 fragile 
+test2-S0---0000.090-0013.900 1 1.14 0.33 environment 
+test2-S0---0000.090-0013.900 1 1.47 0.14 simply 
+test2-S0---0000.090-0013.900 1 1.61 0.11 can't 
+test2-S0---0000.090-0013.900 1 1.72 0.40 support 
+test2-S0---0000.090-0013.900 1 2.12 0.04 and 
+test2-S0---0000.090-0013.900 1 2.16 0.07 that 
+test2-S0---0000.090-0013.900 1 2.23 0.08 leads 
+test2-S0---0000.090-0013.900 1 2.31 0.03 to 
+test2-S0---0000.090-0013.900 1 2.34 0.25 starvation 
+test2-S0---0000.090-0013.900 1 2.59 0.05 it 
+test2-S0---0000.090-0013.900 1 2.64 0.09 leads 
+test2-S0---0000.090-0013.900 1 2.73 0.03 to 
+test2-S0---0000.090-0013.900 1 2.76 0.20 uncertainty 
+test2-S0---0000.090-0013.900 1 2.96 0.04 at 
+test2-S0---0000.090-0013.900 1 3.00 0.11 leads 
+test2-S0---0000.090-0013.900 1 3.11 0.46 unrest 
+test2-S0---0000.090-0013.900 1 3.57 0.14 so 
+test2-S0---0000.090-0013.900 1 3.71 0.06 the 
+test2-S0---0000.090-0013.900 1 3.77 0.16 climate 
+test2-S0---0000.090-0013.900 1 3.93 0.11 change 
+test2-S0---0000.090-0013.900 1 4.04 0.10 is 
+test2-S0---0000.090-0013.900 1 4.14 0.06 will 
+test2-S0---0000.090-0013.900 1 4.20 0.05 be 
+test2-S0---0000.090-0013.900 1 4.25 0.14 terrible 
+test2-S0---0000.090-0013.900 1 4.39 0.05 for 
+test2-S0---0000.090-0013.900 1 4.44 0.16 them 
+```
 
 ### Cleaning Up
 
