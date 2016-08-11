@@ -218,6 +218,8 @@ end
       user="ubuntu"
     fi
 
+    rm -rf /var/run/motd.dynamic
+
     su ${user} -c "cd /home/${user}/tools/eesen-offline-transcriber && ./watch.sh >& /vagrant/log/watched.log &"
 SHELL
   end
