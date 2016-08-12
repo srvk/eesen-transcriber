@@ -173,7 +173,7 @@ Standard NIST sclite scoring is supported for data in .sph and .stm format via t
 
 ##### Models
 
-Also in `Makefile.options` are paths (in the VM) to the models used for decoding. If you create a new acoustic model (see Language Remodeling below), you will want to change this to point to your new model. A recent update provides models designed for 30ms frame sizes, resulting in much faster decoding.  (3-7x real time, depending on configuration)
+Also in `Makefile.options` are paths (in the VM) to the models used for decoding. If you create a new acoustic model (see Language Remodeling below), you will want to change this to point to your new model. A recent update provides models designed for 30ms frame sizes, resulting in much faster decoding.  (1/3-1/7x real time, depending on configuration)
 
 #### Improving Word Error Rate: rescoring with large LM
 
@@ -186,15 +186,15 @@ It's possible to get a 2% relative improvement in WER by adding a step to the de
     rm rescore-eesen.tgz    
     ```
 ### Word Level Alignments
-To get word-level alignments for transcriptions produced by the transcriber, first transcribe something. Let's use the example, test2.mp3. Then run the script run_align.sh
+To get word-level alignments for transcriptions produced by the transcriber, first transcribe something. Let's use the example, `test2.mp3`. Then run the script run_align.sh. This script makes assumptions about the decoding graph to use. To use the settings from `vagrant/Makefile.options` instead, run `make build/output/<basename>.ali`
 
 ```
 ./speech2text /vagrant/test2.mp3
 ./run_align.sh test2
 ```
-Results will be placed in the working folder for the file transcribed, in this case `build/trans/test2`, in a subfolder `align` in the file `ali` so for example:
+Results will be placed alongside outputs in `build/output`, in this case `build/output/test2.ali` so for example:
 ```
-cat build/trans/test2/align/ali
+cat build/output/test2.ali
 test2-S0---0000.090-0013.900 1 0.00 0.24 things 
 test2-S0---0000.090-0013.900 1 0.24 0.07 will 
 test2-S0---0000.090-0013.900 1 0.31 0.16 change 
