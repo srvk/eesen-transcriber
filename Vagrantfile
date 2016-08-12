@@ -137,9 +137,10 @@ Vagrant.configure("2") do |config|
     # rm rescore-eesen.tgz    
 
     # Results (and intermediate files) are placed on the shared host folder
-    mkdir -p /vagrant/{build,log,transcribe_me}
+    mkdir -p /vagrant/{build,log,transcribe_me,src-audio}
 
     ln -s /vagrant/build /home/${user}/tools/eesen-offline-transcriber/build
+    ln -s /vagrant/src-audio /home/${user}/tools/eesen-offline-transcriber/src-audio
 
     # get XFCE, xterm if we want guest VM to open windows /menus on host
     #sudo apt-get install -y xfce4-panel xterm
