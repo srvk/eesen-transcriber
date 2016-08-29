@@ -13,9 +13,7 @@ video format and produces transcriptions as subtitles, plain text, and more.
 Within transcriber, [LIUM speaker diarization](http://www-lium.univ-lemans.fr/diarization/doku.php/welcome) is performed.
 Lastly, the VM provides a video browser in a web page such that transcriptions appear as video subtitles, and are searchable by keyword across videos.
 
-This VM runs either locally with VirtualBox or remotely as an Amazon Machine Image on AWS.
-
-If you have gotten this far, it is assumed you have cloned this repository (`git clone http://github.com/srvk/eesen-transcriber`), and have opened a shell in the `eesen-transcriber` working directory:
+This VM runs either locally with Vagrant/VirtualBox or remotely as an Amazon Machine Image on AWS.
 
 ### [Installation Guide](http://github.com/srvk/eesen-transcriber/INSTALL.md)
 
