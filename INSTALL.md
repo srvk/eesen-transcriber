@@ -16,6 +16,8 @@ And that leads starvation that leads to uncertainty it leads.
 Yes unrest so that the climate change is will be terrible for them.
 ```
 You can also see results in video form at the URL `http://192.168.56.101`.
+This is an IP address created by VirtualBox host-only networking, viewable on your host computer,
+being served out of the virtual machine.
 
 The syntax `vagrant ssh -c ...` is a shorthand way of running commands in the virtual machine (guest) from the host computer. It accomplishes the same thing as several steps:
 
