@@ -56,7 +56,7 @@ on Ubuntu Linux:
 Then you can run `vagrant up` as above, and when prompted, supply the password for your current login account. This gives it to the VM so that it can use sshfs to mount the working directory of your local filesystem as a Vagrant synced filesystem visible from the VM as `/vagrant`. This allows inputs as well as results to reside on your host. Make note of the URL given at the finish of `vagrant up` - if you transcribe the test audio as above,
 (`vagrant ssh -c "vids2web.sh /vagrant/test2.mp3"`) you should be able to see results at this URL.
 
-### Installing with VirtualBox (stand-alone OVA)
+### <a name="OVA"></a> Installing with VirtualBox (stand-alone OVA)
  * unzip the 'working directory' archive (files the VM needs to find in /vagrant)
    This will create a folder on your host computer `eesen-transcriber`
   * Import the OVA using VirtualBox
@@ -65,8 +65,11 @@ Then you can run `vagrant up` as above, and when prompted, supply the password f
         - click Settings
         - click Shared Folders
         - edit the shared folder
-        - replace '/usr1/er1k/boxes/EESEN-Thumbdrive/eesen-transcriber' with
-        the path to the working directory (it will end with 'eesen-transcriber')
+        - Where it says 'Folder Path' replace '/usr1/er1k/boxes/EESEN-Thumbdrive/eesen-transcriber' with
+        the full path to the working directory (it will end with `eesen-transcriber`) - you can use the drop-down
+        menu to navigate to it if you prefer not typing pathnames
+        - make sure the "Auto-mount" checkbox is checked
+        - make sure the 'Folder Name' is `vagrant`
   * Start up the VM with VirtualBox
   * log in as vagrant/vagrant
   * cd bin/
