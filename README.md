@@ -15,9 +15,9 @@ Lastly, the VM provides a video browser in a web page such that transcriptions a
 
 This VM runs either locally with Vagrant/VirtualBox or remotely as an Amazon Machine Image on AWS.
 
-### [Installation Guide](http://github.com/srvk/eesen-transcriber/INSTALL.md)
+### [Installation Guide](https://github.com/srvk/eesen-transcriber/blob/master/INSTALL.md)
 
-### [User Guide](http://github.com/srvk/eesen-transcriber/USERGUIDE.md)
+### [User Guide](https://github.com/srvk/eesen-transcriber/blob/master/USERGUIDE.md)
 
 ## License
 
