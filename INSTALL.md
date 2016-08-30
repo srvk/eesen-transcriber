@@ -57,7 +57,7 @@ Then you can run `vagrant up` as above, and when prompted, supply the password f
 (`vagrant ssh -c "vids2web.sh /vagrant/test2.mp3"`) you should be able to see results at this URL.
 
 ### <a name="OVA"></a> Installing with VirtualBox (stand-alone OVA)
- * unzip the 'working directory' archive (files the VM needs to find in /vagrant)
+ * unzip the working directory archive `eesen-transcriber.zip` (files the VM needs to find in /vagrant)
    This will create a folder on your host computer `eesen-transcriber`
   * Import the OVA using VirtualBox
   * Set the shared folder to be the path of said working directory:
