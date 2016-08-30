@@ -65,7 +65,7 @@ Then you can run `vagrant up` as above, and when prompted, supply the password f
         - click Settings
         - click Shared Folders
         - edit the shared folder
-        - Where it says 'Folder Path' replace '/usr1/er1k/boxes/EESEN-Thumbdrive/eesen-transcriber' with
+        - Where it says 'Folder Path' replace `/usr1/er1k/boxes/EESEN-Thumbdrive/eesen-transcriber` with
         the full path to the working directory (it will end with `eesen-transcriber`) - you can use the drop-down
         menu to navigate to it if you prefer not typing pathnames
         - make sure the "Auto-mount" checkbox is checked
@@ -79,3 +79,7 @@ Then you can run `vagrant up` as above, and when prompted, supply the password f
   ./vids2web.sh /vagrant/test2.mp3
 ```
   and then view results in a web browser at `http://localhost/192.168.56.101`
+  Note that the VM runs in a terminal-only window (no desktop interface) so pay no mind to the
+  warnings about 'mouse pointer integration'. If you accidentally click on the window and are
+  worried you lost your mouse pointer, try pressing the right Ctrl key to get it back.
+  
