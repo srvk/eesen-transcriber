@@ -64,6 +64,9 @@ Then you can run `vagrant up` as above, and when prompted, supply the password f
  * unzip the working directory archive `eesen-transcriber.zip` (files the VM needs to find in /vagrant)
    This will create a folder on your host computer `eesen-transcriber`
   * Import the OVA using VirtualBox
+    - If your system has lower RAM it is possible to still run the system
+     by editing the Settings of the VM in VirtualBox. It can run with as little as 2GB,
+     so please feel free to lower from the 8GB default
   * Set the shared folder to be the path of said working directory:
         - in Oracle VM VirtualBox Manager, click on the VM
         - click Settings
