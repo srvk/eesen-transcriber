@@ -33,9 +33,9 @@ Vagrant.configure("2") do |config|
 
       override.vm.synced_folder ".", "/vagrant", type: "sshfs", ssh_username: ENV['USER'], ssh_port: "22", prompt_for_password: "true"
 
-      override.vm.box = "https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box"
+      override.vm.box = "http://speechkitchen.org/dummy.box"
 
-      # it is assumed these environment variables were set by ". env.sh"
+      # it is assumed these environment variables were set by ". aws.sh"
       aws.access_key_id = ENV['AWS_KEY']
       aws.secret_access_key = ENV['AWS_SECRETKEY']
       aws.keypair_name = ENV['AWS_KEYPAIR']
