@@ -89,7 +89,7 @@ Vagrant.configure("2") do |config|
     # install srvk EESEN (does not require CUDA)
     git clone https://github.com/srvk/eesen
     cd eesen
-    git reset --hard 698ee6f
+    git reset --hard 581d80f  # 2016/12/09 support OpenFST 1.5.1
     cd tools
     make -j `lscpu -p|grep -v "#"|wc -l`
     # remove a parameter from scoring script
