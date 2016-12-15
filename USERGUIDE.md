@@ -131,11 +131,11 @@ It's possible to get a 2% relative improvement in WER by adding a step to the de
     rm rescore-eesen.tgz    
     ```
 ### Word Level Alignments
-To get word-level alignments for transcriptions produced by the transcriber, first transcribe something. Let's use the example, `test2.mp3`. Then run the script run_align.sh. This script makes assumptions about the decoding graph to use. To use the settings from `vagrant/Makefile.options` instead, run `make build/output/<basename>.ali`
+To get word-level alignments for transcriptions produced by the transcriber, first transcribe something. Let's use the example, `test2.mp3`. Then run the script [align.sh](https://github.com/srvk/srvk-eesen-offline-transcriber/blob/master/align.sh). This script makes assumptions about the decoding graph to use. To use the settings from `vagrant/Makefile.options` instead, run `make build/output/<basename>.ali`
 
 ```
 ./speech2text /vagrant/test2.mp3
-./run_align.sh test2
+./align.sh test2
 ```
 Results will be placed alongside outputs in `build/output`, in this case `build/output/test2.ali` so for example:
 ```
