@@ -176,6 +176,25 @@ test2-S0---0000.090-0013.900 1 4.39 0.05 for
 test2-S0---0000.090-0013.900 1 4.44 0.16 them 
 ```
 
+### Producing phoneme transcriptions
+
+If you want to include phoneme transcriptions in the output, please uncomment the line(s) in `run-segmented.sh` or `speech2text.sh` in the transcriber home directory (`/home/vagrant/tools/eesen-offline-transcriber`) that begin with
+
+```
+python local/readphonemes.py build/trans/${basename}/eesen/decode/phones.1.txt > build/output/${basename}.phones
+```
+
+This produces, in the same output folder as the other various transcription formats, a file with a `.phones` extension. For the test audio `test2.mp3` the transcription looks like the following; feel free to modify `local/readphonemes.py` if you wish to change the format. You can even change the appearance of the phonemes by modifying `local/units.txt` which lists the phonemes, one per line.
+
+```
+utterance ID:  test2-S0---0000.070-0006.460
+TH IH NG Z W IH L CH EY N JH IH M W EY Z DH AH T DH EH R F R AE JH AH L IH N V AY R AH N M AH N T S IH M P L IY K AE N T S AH P AO R T 
+utterance ID:  test2-S1---0006.460-0009.340
+AH N D DH AH T L IY D Z UW S AA R V EY SH AH N DH IH T L IY D Z D UW AH N S ER T AH N T IY AE T L IY D Z 
+utterance ID:  test2-S2---0009.340-0014.340
+[UM] S T AH N R EH S P T L S OW AH T DH IY K L AY M IH T CH EY N JH IH Z W IH L B IY T EY R AH B AH L F R ER DH EH M 
+```
+
 ### Cleaning Up
 
 Sometimes it helps to know how to shut down, as well as install and run a system. Two use cases come to mind.
