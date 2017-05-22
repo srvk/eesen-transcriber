@@ -223,7 +223,7 @@ This will produce several results.
   Scored 1 sentences, 0 not present in hyp.
   ```
   * file extension `.dtl`: detailed phone level errors (correct, insertion, substitution)
-  * file extension `.phon.stm`: gold standard phonetic pronunciation based on input text, according to [http://www.speech.cs.cmu.edu/cgi-bin/cmudict](CMUDict)
+  * file extension `.phon.stm`: gold standard phonetic pronunciation based on input text, according to [http://www.speech.cs.cmu.edu/tools/lextool.html](LOGIOS Lexicon Tool)
 
 ### Cleaning Up
 
