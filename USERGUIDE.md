@@ -124,12 +124,11 @@ Also in `Makefile.options` are paths (in the VM) to the models used for decoding
 
 It's possible to get a 2% relative improvement in WER by adding a step to the decoding process, which rescores intermediate lattices with a larger language model (Cantab 4-gram, unpruned). This adds extra time to the decoding process, and requires more memory, so it is commented out of the Vagrantfile by default. But if you have a 16 GB host machine, and the extra time, try it out. The data file `rescore-eesen.tgz` contains an extra program, the language model, and a patched Makefile.
 
-    ```
     cd /home/${user}
     wget http://speechkitchen.org/vms/Data/rescore-eesen.tgz
     tar zxvf rescore-eesen.tgz
     rm rescore-eesen.tgz    
-    ```
+
 ### Word Level Alignments
 To get word-level alignments for transcriptions produced by the transcriber, first transcribe something. Let's use the example, `test2.mp3`. Then run the script [align.sh](https://github.com/srvk/srvk-eesen-offline-transcriber/blob/master/align.sh). This script makes assumptions about the decoding graph to use. To use the settings from `vagrant/Makefile.options` instead, run `make build/output/<basename>.ali`
 
@@ -176,15 +175,23 @@ test2-S0---0000.090-0013.900 1 4.39 0.05 for
 test2-S0---0000.090-0013.900 1 4.44 0.16 them 
 ```
 
-### Producing phoneme transcriptions
+### Producing Phoneme Transcriptions
 
-If you want to include phoneme transcriptions in the output, please uncomment the line(s) in `run-segmented.sh` or `speech2text.sh` in the transcriber home directory (`/home/vagrant/tools/eesen-offline-transcriber`) that begin with
+If you want to include phoneme transcriptions in the output, there are places in two scripts that need to be uncommented.
+First, please uncomment near lines 94 and 95 of `decode_ctc_lat_phon.sh`, found in the transcriber home directory e.g: (`/home/vagrant/tools/eesen-offline-transcriber/local/decode_ctc_lat_phon.sh`) to look like this:
+```
+$cmd JOB=1:$nj $dir/log/decode2.JOB.log \
+     net-output-extract --class-frame-counts=$srcdir/label.counts --apply-log=true $srcdir/$mdl "$feats" ark,t:$dir/phones.JOB.txt
+```
+This runs net-output-extract an additional time but saves the frame level log likelihoods for every phone directly to disk (`phones.1.txt`) - these will be used by the next step.
+
+Second, please uncomment the line in `run-segmented.sh` or `speech2text.sh` (depending on which one you run) in the transcriber home directory (`/home/vagrant/tools/eesen-offline-transcriber`) that begin with
 
 ```
 python local/readphonemes.py build/trans/${basename}/eesen/decode/phones.1.txt > build/output/${basename}.phones
 ```
 
-This produces, in the same output folder as the other various transcription formats, a file with a `.phones` extension. For the test audio `test2.mp3` the transcription looks like the following; feel free to modify `local/readphonemes.py` if you wish to change the format. You can even change the appearance of the phonemes by modifying `local/units.txt` which lists the phonemes, one per line.
+This produces, in the same output folder as the other various transcription formats, a file with a `.phones` extension. For the test audio `test2.mp3` for example, the output would be in `build/output/test2.phones` and look like the following: 
 
 ```
 utterance ID:  test2-S0---0000.070-0006.460
@@ -194,6 +201,29 @@ AH N D DH AH T L IY D Z UW S AA R V EY SH AH N DH IH T L IY D Z D UW AH N S ER T
 utterance ID:  test2-S2---0009.340-0014.340
 [UM] S T AH N R EH S P T L S OW AH T DH IY K L AY M IH T CH EY N JH IH Z W IH L B IY T EY R AH B AH L F R ER DH EH M 
 ```
+Feel free to modify `local/readphonemes.py` if you wish to change the format. You can even change the appearance of the phonemes by modifying `local/units.txt` which lists the phonemes, one per line. To produce International Phonetic Alphabet instead of CMUDict phones, edit the script `local/readphonemes.py` and change the variable definition in line 11:
+```
+# set field to 0 for ipa                                                                                                             
+# or else set it to 1 for CMUDict phones                                                                                             
+field=1
+```
+
+### Producing Phone Error Rates
+
+Another script is provided that builds on the results of the above step. Given an input audio, plain text file containing words, produce a phonetic transcription and compute phone error rate of the audio as it relates to the text file as "gold standard"
+This works best if the text and the audio are not very long; perhaps a half dozen utterances. To run, give a command line like (assuming the sample text and audio provided with Eesen transcriber):
+```
+./speech2per.sh /vagrant/test2.txt /vagrant/test2.mp3
+```
+This will produce several results. 
+  * In the output directory, with file extension `.sys`: phone error rate score
+  ```
+  %WER 11.19 [ 16 / 143, 4 ins, 4 del, 8 sub ]
+  %SER 100.00 [ 1 / 1 ]
+  Scored 1 sentences, 0 not present in hyp.
+  ```
+  * file extension `.dtl`: detailed phone level errors (correct, insertion, substitution)
+  * file extension `.phon.stm`: gold standard phonetic pronunciation based on input text, according to [http://www.speech.cs.cmu.edu/cgi-bin/cmudict](CMUDict)
 
 ### Cleaning Up
 
