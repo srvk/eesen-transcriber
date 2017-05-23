@@ -177,21 +177,7 @@ test2-S0---0000.090-0013.900 1 4.44 0.16 them
 
 ### Producing Phoneme Transcriptions
 
-If you want to include phoneme transcriptions in the output, there are places in two scripts that need to be uncommented.
-First, please uncomment near lines 94 and 95 of `decode_ctc_lat_phon.sh`, found in the transcriber home directory e.g: (`/home/vagrant/tools/eesen-offline-transcriber/local/decode_ctc_lat_phon.sh`) to look like this:
-```
-$cmd JOB=1:$nj $dir/log/decode2.JOB.log \
-     net-output-extract --class-frame-counts=$srcdir/label.counts --apply-log=true $srcdir/$mdl "$feats" ark,t:$dir/phones.JOB.txt
-```
-This runs net-output-extract an additional time but saves the frame level log likelihoods for every phone directly to disk (`phones.1.txt`) - these will be used by the next step.
-
-Second, please uncomment the line in `run-segmented.sh` or `speech2text.sh` (depending on which one you run) in the transcriber home directory (`/home/vagrant/tools/eesen-offline-transcriber`) that begin with
-
-```
-python local/readphonemes.py build/trans/${basename}/eesen/decode/phones.1.txt > build/output/${basename}.phones
-```
-
-This produces, in the same output folder as the other various transcription formats, a file with a `.phones` extension. For the test audio `test2.mp3` for example, the output would be in `build/output/test2.phones` and look like the following: 
+Run `speech2phones.sh` to produce, in the same output folder as the other various transcription formats, a file with a `.phones` extension. For the test audio `test2.mp3` for example, the output would be in `build/output/test2.phones` and look like the following: 
 
 ```
 utterance ID:  test2-S0---0000.070-0006.460
