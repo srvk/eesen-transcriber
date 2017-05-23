@@ -233,6 +233,10 @@ This will produce several results.
   ```
   * file extension `.dtl`: detailed phone level errors (correct, insertion, substitution)
   * file extension `.phon.stm`: gold standard phonetic pronunciation based on input text, according to [http://www.speech.cs.cmu.edu/tools/lextool.html](LOGIOS Lexicon Tool)
+  * the log file speech2per.log - which keeps a list of the scores produced from each document processed
+  ```
+  test2 %PER 13.99 [ 20 / 143, 6 ins, 5 del, 9 sub ]
+  ```
 
 ### Cleaning Up
 
