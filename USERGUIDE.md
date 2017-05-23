@@ -195,17 +195,26 @@ This produces, in the same output folder as the other various transcription form
 
 ```
 utterance ID:  test2-S0---0000.070-0006.460
+θ ɪ ŋ z w ɪ ɫ tʃ eɪ n dʒ ɪ m w eɪ z ð ʌ t ð ɛ r f r æ dʒ ʌ ɫ ɪ n v aɪ r ʌ n m ʌ n t s ɪ m p ɫ i k æ n t s ʌ p ɔ r t 
+utterance ID:  test2-S1---0006.460-0009.340
+ʌ n d ð ʌ t ɫ i d z u s ɑ r v eɪ ʃ ʌ n ð ɪ t ɫ i d z d u ʌ n s ɝ t ʌ n t i æ t ɫ i d z 
+utterance ID:  test2-S2---0009.340-0014.340
+[UM] s t ʌ n r ɛ s p t ɫ s oʊ ʌ t ð i k ɫ aɪ m ɪ t tʃ eɪ n dʒ ɪ z w ɪ ɫ b i t eɪ r ʌ b ʌ ɫ f r ɝ ð ɛ m 
+```
+Feel free to modify `local/readphonemes.py` if you wish to change the format. You can even change the appearance of the phonemes by modifying `local/units.txt` which lists the phonemes, one per line. To produce CMUDict phones instead of International Phonetic Alphabet, edit the script `/home/vagrant/tools/eesen-offline-transcriber/local/readphonemes.py` and change the variable definition in line 11:
+```
+# set field to 0 for ipa                                                                                                             
+# or else set it to 1 for CMUDict phones                                                                                             
+field=1
+```
+Then the output will look like:
+```
+utterance ID:  test2-S0---0000.070-0006.460
 TH IH NG Z W IH L CH EY N JH IH M W EY Z DH AH T DH EH R F R AE JH AH L IH N V AY R AH N M AH N T S IH M P L IY K AE N T S AH P AO R T 
 utterance ID:  test2-S1---0006.460-0009.340
 AH N D DH AH T L IY D Z UW S AA R V EY SH AH N DH IH T L IY D Z D UW AH N S ER T AH N T IY AE T L IY D Z 
 utterance ID:  test2-S2---0009.340-0014.340
 [UM] S T AH N R EH S P T L S OW AH T DH IY K L AY M IH T CH EY N JH IH Z W IH L B IY T EY R AH B AH L F R ER DH EH M 
-```
-Feel free to modify `local/readphonemes.py` if you wish to change the format. You can even change the appearance of the phonemes by modifying `local/units.txt` which lists the phonemes, one per line. To produce International Phonetic Alphabet instead of CMUDict phones, edit the script `local/readphonemes.py` and change the variable definition in line 11:
-```
-# set field to 0 for ipa                                                                                                             
-# or else set it to 1 for CMUDict phones                                                                                             
-field=1
 ```
 
 ### Producing Phone Error Rates
@@ -216,9 +225,9 @@ This works best if the text and the audio are not very long; perhaps a half doze
 ./speech2per.sh /vagrant/test2.txt /vagrant/test2.mp3
 ```
 This will produce several results. 
-  * In the output directory, with file extension `.sys`: phone error rate score
+  * In the output directory, with file extension `.phon.sys`: phone error rate score
   ```
-  %WER 11.19 [ 16 / 143, 4 ins, 4 del, 8 sub ]
+  %PER 11.19 [ 16 / 143, 4 ins, 4 del, 8 sub ]
   %SER 100.00 [ 1 / 1 ]
   Scored 1 sentences, 0 not present in hyp.
   ```
