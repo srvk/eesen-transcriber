@@ -177,7 +177,11 @@ test2-S0---0000.090-0013.900 1 4.44 0.16 them
 
 ### Producing Phoneme Transcriptions
 
-Run `speech2phones.sh` to produce, in the same output folder as the other various transcription formats, a file with a `.phones` extension. For the test audio `test2.mp3` for example, the output would be in `build/output/test2.phones` and look like the following: 
+Run `speech2phones.sh` to produce, in the same output folder as the other various transcription formats, a file with a `.phones` extension. For the sample audio `test2.mp3` for example, run this command from outside of the virtual machine:
+```
+vagrant ssh -c "speech2phones.sh /vagrant/test2.mp3"
+```
+The output in `build/output/test2.phones` should look like the following: 
 
 ```
 utterance ID:  test2-S0---0000.070-0006.460
@@ -187,7 +191,7 @@ utterance ID:  test2-S1---0006.460-0009.340
 utterance ID:  test2-S2---0009.340-0014.340
 [UM] s t ʌ n r ɛ s p t ɫ s oʊ ʌ t ð i k ɫ aɪ m ɪ t tʃ eɪ n dʒ ɪ z w ɪ ɫ b i t eɪ r ʌ b ʌ ɫ f r ɝ ð ɛ m 
 ```
-Feel free to modify `local/readphonemes.py` if you wish to change the format. You can even change the appearance of the phonemes by modifying `local/units.txt` which lists the phonemes, one per line. To produce CMUDict phones instead of International Phonetic Alphabet, edit the script `/home/vagrant/tools/eesen-offline-transcriber/local/readphonemes.py` and change the variable definition in line 11:
+Feel free to modify `/home/vagrant/eesen-offline-transcriber/local/readphonemes.py` in the VM if you wish to change the format. You can even change the appearance of the phonemes by modifying `/home/vagrant/eesen-offline-transcriber/local/units.txt` which is a map of phoneme IDs to phoneme, one per line. To produce CMUDict phones instead of International Phonetic Alphabet, edit the script `/home/vagrant/tools/eesen-offline-transcriber/local/readphonemes.py` and change the variable definition in line 11:
 ```
 # set field to 0 for ipa                                                                                                             
 # or else set it to 1 for CMUDict phones                                                                                             
@@ -205,13 +209,13 @@ utterance ID:  test2-S2---0009.340-0014.340
 
 ### Producing Phone Error Rates
 
-Another script is provided that builds on the results of the above step. Given an input audio, plain text file containing words, produce a phonetic transcription and compute phone error rate of the audio as it relates to the text file as "gold standard"
-This works best if the text and the audio are not very long; perhaps a half dozen utterances. To run, give a command line like (assuming the sample text and audio provided with Eesen transcriber):
+Another script is provided that builds on the results of the above. Given plain text containing words, and an audio (or video) file, produce a phonetic transcription and compute phone error rate of the audio as it relates to the text file as though the text were a "gold standard"
+This works best if the text and the audio are not very long; perhaps a half dozen utterances. To run, from outside the VM in the folder where you started it with `vagrant up`, give a command line like (using the sample text and audio provided with Eesen transcriber):
 ```
-./speech2per.sh /vagrant/test2.txt /vagrant/test2.mp3
+vagrant ssh -c "speech2per.sh /vagrant/test2.txt /vagrant/test2.mp3"
 ```
 This will produce several results. 
-  * In the output directory, with file extension `.phon.sys`: phone error rate score
+  * In the `build/output` directory, with file extension `.phon.sys`: phone error rate score
   ```
   %PER 11.19 [ 16 / 143, 4 ins, 4 del, 8 sub ]
   %SER 100.00 [ 1 / 1 ]
