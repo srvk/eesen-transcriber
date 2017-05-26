@@ -217,7 +217,7 @@ vagrant ssh -c "speech2per.sh /vagrant/test2.txt /vagrant/test2.mp3"
 This will produce several results. 
   * In the `build/output` directory, with file extension `.phon.sys`: phone error rate score
   ```
-  %PER 11.19 [ 16 / 143, 4 ins, 4 del, 8 sub ]
+  %PER 14.69 [ 21 / 143, 7 ins, 5 del, 9 sub ]
   %SER 100.00 [ 1 / 1 ]
   Scored 1 sentences, 0 not present in hyp.
   ```
