@@ -10,7 +10,7 @@ the [TED-LIUM](http://www-lium.univ-lemans.fr/en/content/ted-lium-corpus) datase
 Cantab Research. In addition it includes an adapted version of
 Tanel Alumae's [Kaldi Offline Transcriber](https://github.com/alumae/kaldi-offline-transcriber) which accepts most any audio/
 video format and produces transcriptions as subtitles, plain text, and more.
-Within transcriber, [LIUM speaker diarization](http://www-lium.univ-lemans.fr/diarization/doku.php/welcome) is performed.
+The transcriber performs [LIUM speaker diarization](http://www-lium.univ-lemans.fr/diarization/doku.php/welcome).
 Lastly, the VM provides a video browser in a web page such that transcriptions appear as video subtitles, and are searchable by keyword across videos.
 
 This VM runs either locally with Vagrant/VirtualBox or remotely as an Amazon Machine Image on AWS.
