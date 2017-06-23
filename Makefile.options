@@ -1,6 +1,7 @@
 KALDI_ROOT=~/eesen
 EESEN_ROOT=~/eesen
 SEGMENTS=show.s.seg
+BEAM=17.0
 
 # 8k models from switchboard
 #ACWT=0.6
