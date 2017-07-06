@@ -22,3 +22,7 @@ This VM runs either locally with Vagrant/VirtualBox or remotely as an Amazon Mac
 ## License
 
 The Eesen software has been released under an Apache 2.0 license, the LIUM speaker diarization is GPL, but LIUM offers to work with you if that is too strict [LIUM license](http://www-lium.univ-lemans.fr/diarization/doku.php/licence). The Eesen transcriber uses and expands the Kaldi offline transcriber, which has been released under a very liberal license at [Kaldi Offline Transcriber license](https://github.com/alumae/kaldi-offline-transcriber/blob/master/LICENSE). The transcriber uses various other tools such as Atlas, Sox, FFMPEG that are being released as Ubuntu packages. Some of these have their own licenses, if one of them poses a problem, it would not be too hard to remove them specifically.
+
+## Sponsors
+
+Thanks to NVidia for their [Academic GPU Grant](https://developer.nvidia.com/academic_gpu_seeding)
