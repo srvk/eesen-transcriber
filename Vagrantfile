@@ -61,9 +61,25 @@ Vagrant.configure("2") do |config|
       #override.nfs.functional = false
     end
 
+    config.vm.provider "azure" do |azure, override|
+      # each of the below values will default to use the env vars named as below if not specified explicitly
+      azure.tenant_id = ENV['AZURE_TENANT_ID']
+      azure.client_id = ENV['AZURE_CLIENT_ID']
+      azure.client_secret = ENV['AZURE_CLIENT_SECRET']
+      azure.subscription_id = ENV['AZURE_SUBSCRIPTION_ID']
+
+      # For now, this brings up Ubuntu 16.04 LTS
+      config.ssh.private_key_path = '~/.ssh/id_rsa'
+      config.vm.box = "azure"
+      #azure.vm_name = "Eesen Transcriber"
+      #azure.resource_group_name = "jsalt"
+      azure.location = "westus2"
+      #override.vm.box = "https://github.com/azure/vagrant-azure/raw/v2.0/dummy.box"
+    end
+
   config.vm.provision "shell", inline: <<-SHELL
     sudo apt-get update -y
-    sudo apt-get upgrade
+    sudo apt-get upgrade -y
 
     if grep --quiet vagrant /etc/passwd
     then
@@ -72,9 +88,11 @@ Vagrant.configure("2") do |config|
       user="ubuntu"
     fi
 
-    sudo apt-get install -y git make automake libtool autoconf patch subversion fuse\
-       libatlas-base-dev libatlas-dev liblapack-dev sox openjdk-6-jre libav-tools g++\
+    sudo apt-get install -y git make automake libtool autoconf patch subversion fuse \
+       libatlas-base-dev libatlas-dev liblapack-dev sox libav-tools g++ \
        zlib1g-dev libsox-fmt-all apache2 sshfs
+    sudo apt-get install -y openjdk-6-jre || sudo apt-get install -y icedtea-netx-common icedtea-netx
+    sudo apt-get install -y libtool-bin
 
     # If you wish to train EESEN with a GPU machine, uncomment this section to install CUDA
     # also uncomment the line that mentions cudatk-dir in the EESEN install section below
@@ -86,12 +104,16 @@ Vagrant.configure("2") do |config|
     #apt-get remove --purge xserver-xorg-video-nouveau                           
     #apt-get install -y cuda
 
+    # Kaldi and others want bash - otherwise the build process fails
+    [ $(readlink /bin/sh) == "dash" ] && sudo ln -s -f bash /bin/sh
+
     # install srvk EESEN (does not require CUDA)
     git clone https://github.com/srvk/eesen
     cd eesen
     git reset --hard 581d80f  # 2016/12/09 support OpenFST 1.5.1
     cd tools
-    make -j `lscpu -p|grep -v "#"|wc -l`
+    make -j || make
+    # `lscpu -p|grep -v "#"|wc -l`
     # remove a parameter from scoring script
     sed -i 's/\ lur//g' sctk/bin/hubscr.pl
     cd ../src
@@ -210,7 +232,7 @@ Vagrant.configure("2") do |config|
 end
 
 # always monitor watched folder
-  Vagrant.configure("2") do |config|
+Vagrant.configure("2") do |config|
   config.vm.provision "shell", run: "always", inline: <<-SHELL
     if grep --quiet vagrant /etc/passwd
     then
@@ -223,4 +245,4 @@ end
 
     su ${user} -c "cd /home/${user}/tools/eesen-offline-transcriber && ./watch.sh >& /vagrant/log/watched.log &"
 SHELL
-  end
+end
