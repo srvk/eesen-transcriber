@@ -69,8 +69,8 @@ Vagrant.configure("2") do |config|
       azure.subscription_id = ENV['AZURE_SUBSCRIPTION_ID']
 
       # For now, this brings up Ubuntu 16.04 LTS
-      config.ssh.private_key_path = '~/.ssh/id_rsa'
-      config.vm.box = "azure"
+      override.ssh.private_key_path = '~/.ssh/id_rsa'
+      override.vm.box = "azure"
       #azure.vm_name = "Eesen Transcriber"
       #azure.resource_group_name = "jsalt"
       azure.location = "westus2"
