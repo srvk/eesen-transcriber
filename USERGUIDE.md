@@ -118,7 +118,11 @@ where you launched the VM, typically ending in `eesen-transcriber`
 
 ##### Models
 
-Also in `Makefile.options` are paths (in the VM) to the models used for decoding. If you create a new acoustic model (see Language Remodeling below), you will want to change this to point to your new model. A recent update provides models designed for 30ms frame sizes, resulting in much faster decoding.  (1/3-1/7x real time, depending on configuration)
+Also in `Makefile.options` are paths (in the VM) to the models used for decoding. If you create a new language model (see Language Remodeling below), you will want to change this to point to your new model. A recent update provides models designed for 30ms frame sizes, resulting in much faster decoding.  (1/3-1/7x real time, depending on configuration)
+
+##### Decoding with the Aspire Chain Model
+
+In order to use the open-source Kaldi Aspire chain models (from http://kaldi-asr.org/models.html), it's best to provision a new virtual machine. Rename `Vagrantfile.aspire` to `Vagrantfile`, and then 'vagrant up' as in the [Installation Guide](https://github.com/srvk/eesen-transcriber/blob/master/INSTALL.md). This VM uses Kaldi instead of Eesen. The script to transcribe audio is `speech2text.aspire.sh` instead of `speech2text.sh`
 
 #### Improving Word Error Rate: rescoring with large LM
 
