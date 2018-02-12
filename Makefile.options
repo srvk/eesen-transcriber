@@ -10,8 +10,9 @@ BEAM=17.0
 #   aspire.kaldi  - models built from http://kaldi-asr.org/models.html
 #   aspire.yenda  - yenda's aspire models
 
-MODELS=aspire.kaldi
-#MODELS=tedlium.eesen
+# Uncomment one of the below
+#MODELS=aspire.kaldi
+MODELS=tedlium.eesen
 #MODELS=swbd.8k
 
 ifeq ($(MODELS),aspire.kaldi)
