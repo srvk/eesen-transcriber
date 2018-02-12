@@ -67,8 +67,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     # change to 'kaldi' for Aspire models
-#    TOOLKIT='eesen' 
-    TOOLKIT='kaldi' 
+    TOOLKIT='eesen' 
+#    TOOLKIT='kaldi' 
                                                                                                                               
     # turn off debconf prompting (annoying grub prompt)
     export DEBIAN_FRONTEND=noninteractive  
