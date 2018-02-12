@@ -9,7 +9,8 @@ Vagrant.configure("2") do |config|
     # Make sure you don't check in aws.sh (maybe make a copy with your "secret" data)
     # Before that, do
     #   vagrant plugin install vagrant-aws; vagrant plugin install vagrant-sshfs
-    config.vm.box = "ubuntu/trusty64"
+  #config.vm.box = "ubuntu/trusty64"
+    config.vm.box = "bento/ubuntu-16.04"
     config.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777", "fmode=777"]
 
     config.vm.provider "virtualbox" do |vbox|
@@ -18,10 +19,13 @@ Vagrant.configure("2") do |config|
       # enable (uncomment) this for debugging output
       #vbox.gui = true
 
+      # turn off annoying auto update guest additions
+      config.vbguest.auto_update = false
+      
       # host-only network on which web browser serves files
       config.vm.network "private_network", ip: "192.168.56.101"
 
-      vbox.cpus = 2
+      vbox.cpus = 4
       vbox.memory = 8192
     end
 
@@ -61,25 +65,17 @@ Vagrant.configure("2") do |config|
       #override.nfs.functional = false
     end
 
-    config.vm.provider "azure" do |azure, override|
-      # each of the below values will default to use the env vars named as below if not specified explicitly
-      azure.tenant_id = ENV['AZURE_TENANT_ID']
-      azure.client_id = ENV['AZURE_CLIENT_ID']
-      azure.client_secret = ENV['AZURE_CLIENT_SECRET']
-      azure.subscription_id = ENV['AZURE_SUBSCRIPTION_ID']
-
-      # For now, this brings up Ubuntu 16.04 LTS
-      override.ssh.private_key_path = '~/.ssh/id_rsa'
-      override.vm.box = "azure"
-      #azure.vm_name = "Eesen Transcriber"
-      #azure.resource_group_name = "jsalt"
-      azure.location = "westus2"
-      #override.vm.box = "https://github.com/azure/vagrant-azure/raw/v2.0/dummy.box"
-    end
-
   config.vm.provision "shell", inline: <<-SHELL
-    sudo apt-get update -y
-    sudo apt-get upgrade -y
+    # change to 'kaldi' for Aspire models
+#    TOOLKIT='eesen' 
+    TOOLKIT='kaldi' 
+                                                                                                                              
+    # turn off debconf prompting (annoying grub prompt)
+    export DEBIAN_FRONTEND=noninteractive  
+
+    apt-get update
+    #apt-get upgrade -y
+    apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
 
     if grep --quiet vagrant /etc/passwd
     then
@@ -88,11 +84,13 @@ Vagrant.configure("2") do |config|
       user="ubuntu"
     fi
 
-    sudo apt-get install -y git make automake libtool autoconf patch subversion fuse \
-       libatlas-base-dev libatlas-dev liblapack-dev sox libav-tools g++ \
+    sudo apt-get install -y git make automake libtool libtool-bin autoconf patch subversion fuse\
+       libatlas3-base libatlas-base-dev libatlas-dev liblapack-dev sox openjdk-8-jre libav-tools g++\
        zlib1g-dev libsox-fmt-all apache2 sshfs
-    sudo apt-get install -y openjdk-6-jre || sudo apt-get install -y icedtea-netx-common icedtea-netx
-    sudo apt-get install -y libtool-bin
+
+    # fix dash-as-bash
+    rm /bin/sh
+    ln -s /bin/bash /bin/sh  
 
     # If you wish to train EESEN with a GPU machine, uncomment this section to install CUDA
     # also uncomment the line that mentions cudatk-dir in the EESEN install section below
@@ -104,21 +102,32 @@ Vagrant.configure("2") do |config|
     #apt-get remove --purge xserver-xorg-video-nouveau                           
     #apt-get install -y cuda
 
-    # Kaldi and others want bash - otherwise the build process fails
-    [ $(readlink /bin/sh) == "dash" ] && sudo ln -s -f bash /bin/sh
-
-    # install srvk EESEN (does not require CUDA)
-    git clone https://github.com/srvk/eesen
-    cd eesen
-    git reset --hard 581d80f  # 2016/12/09 support OpenFST 1.5.1
-    cd tools
-    make -j || make
-    # `lscpu -p|grep -v "#"|wc -l`
-    # remove a parameter from scoring script
-    sed -i 's/\ lur//g' sctk/bin/hubscr.pl
-    cd ../src
-    ./configure --shared #--cudatk-dir=/opt/nvidia/cuda
-    make -j `lscpu -p|grep -v "#"|wc -l`
+    if [ $TOOLKIT == 'kaldi' ]
+    then
+      # install Kaldi
+      cd /home/${user}
+      git clone https://github.com/kaldi-asr/kaldi
+      cd kaldi
+      git reset --hard 70748308810f
+      cd tools
+      make -j `lscpu -p|grep -v "#"|wc -l`
+      cd ../src
+      ./configure --shared
+      make depend
+      make -j `lscpu -p|grep -v "#"|wc -l`
+    else
+      # install srvk EESEN (does not require CUDA)
+      git clone https://github.com/srvk/eesen
+      cd eesen
+      git reset --hard 581d80f  # 2016/12/09 support OpenFST 1.5.1
+      cd tools
+      make -j `lscpu -p|grep -v "#"|wc -l`
+      # remove a parameter from scoring script
+      sed -i 's/\ lur//g' sctk/bin/hubscr.pl
+      cd ../src
+      ./configure --shared #--cudatk-dir=/opt/nvidia/cuda
+      make -j `lscpu -p|grep -v "#"|wc -l`
+    fi
 
     # install language model building toolkit
     cd /home/${user}/eesen/asr_egs/tedlium/v2-30ms
@@ -131,20 +140,38 @@ Vagrant.configure("2") do |config|
     mv srvk-eesen-offline-transcriber eesen-offline-transcriber
     # make links to EESEN
     cd eesen-offline-transcriber
-    ln -s /home/${user}/eesen/asr_egs/tedlium/v2-30ms/steps .
-    ln -s /home/${user}/eesen/asr_egs/tedlium/v2-30ms/utils .
 
-    # get models
-    cd /home/${user}/eesen/asr_egs/tedlium
-    wget -nv http://speechkitchen.org/vms/Data/v2-30ms.tgz
-    tar zxvf v2-30ms.tgz --dereference
-    rm v2-30ms.tgz
-    # optionally get 8khz models
-    if [ -f /vagrant/swbd-v1-pitch.tgz ]
+    if [ $TOOLKIT == 'kaldi' ]
     then
-       cd /home/${user}/eesen/asr_egs/swbd
-       tar zxvf /vagrant/swbd-v1-pitch.tgz
+      ln -s /home/${user}/kaldi/egs/swbd/s5/steps .
+      ln -s /home/${user}/kaldi/egs/swbd/s5/utils .
+
+      # aspire models - 8khz online/nnet3 chained
+      cd /home/${user}/kaldi/egs
+      wget -nv http://speechkitchen.org/vms/Data/aspire-chain-model-srvk.tgz
+      tar zxvf aspire-chain-model-srvk.tgz --dereference
+      rm aspire-chain-model-srvk.tgz
+
+      # fix a hard coded pathname in model config files
+      sed -i s/er1k/${user}/g aspire/s5/exp/tdnn_7b_chain_online/conf/online.conf
+      sed -i s/er1k/${user}/g aspire/s5/exp/tdnn_7b_chain_online/conf/ivector_extractor.conf
+    else
+      ln -s /home/${user}/eesen/asr_egs/tedlium/v2-30ms/steps .
+      ln -s /home/${user}/eesen/asr_egs/tedlium/v2-30ms/utils .
+
+      # get models
+      cd /home/${user}/eesen/asr_egs/tedlium
+      wget -nv http://speechkitchen.org/vms/Data/v2-30ms.tgz
+      tar zxvf v2-30ms.tgz --dereference
+      rm v2-30ms.tgz
+      # optionally get 8khz models
+      if [ -f /vagrant/swbd-v1-pitch.tgz ]
+      then
+         cd /home/${user}/eesen/asr_egs/swbd
+         tar zxvf /vagrant/swbd-v1-pitch.tgz
+      fi
     fi
+
 
     # Uncomment for optional large language model rescoring
     # produces generally 2% better Word Error Rates at the epense of longer
@@ -232,7 +259,7 @@ Vagrant.configure("2") do |config|
 end
 
 # always monitor watched folder
-Vagrant.configure("2") do |config|
+  Vagrant.configure("2") do |config|
   config.vm.provision "shell", run: "always", inline: <<-SHELL
     if grep --quiet vagrant /etc/passwd
     then
@@ -245,4 +272,4 @@ Vagrant.configure("2") do |config|
 
     su ${user} -c "cd /home/${user}/tools/eesen-offline-transcriber && ./watch.sh >& /vagrant/log/watched.log &"
 SHELL
-end
+  end

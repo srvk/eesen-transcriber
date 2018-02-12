@@ -1,22 +1,66 @@
-KALDI_ROOT=~/eesen
+KALDI_ROOT=~/kaldi
 EESEN_ROOT=~/eesen
 SEGMENTS=show.s.seg
 BEAM=17.0
 
-# 8k models from switchboard
-#ACWT=0.6
-#GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/data/lang_phn_sw1_fsh_tgpr
-#MODEL_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/exp/train_phn_l5_c320
-#sample_rate=8k
-#fbank=make_fbank_pitch
+# choose MODELS from:
+#   tedlium.eesen - default: Eesen Tedlium models 
+#   swbd.8k	  - Eesen 8khz Switchboard models
+#   swbd.tf	  - Tensorflow Switchboard models
+#   aspire.kaldi  - models built from http://kaldi-asr.org/models.html
+#   aspire.yenda  - yenda's aspire models
 
-# v2-30ms 16k models from tedlium-release2
-ACWT=0.8
-# choose one GRAPH_DIR below
-# smaller LM, faster decode, less RAM
-GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v2-30ms/data/lang_phn_test_test_newlm
-# most general, largest vocabulary/grammar
-#GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v2-30ms/data/lang_phn_test
-MODEL_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v2-30ms/exp/train_phn_l5_c320_v1s
-sample_rate=16k
-fbank=make_fbank
+MODELS=aspire.kaldi
+#MODELS=tedlium.eesen
+#MODELS=swbd.8k
+
+ifeq ($(MODELS),aspire.kaldi)
+  # Aspire models
+  KALDI_ROOT=~/kaldi
+  EESEN_ROOT=~/kaldi
+  BEAM=15.0
+  ACWT=1.0
+  GRAPH_DIR?=$(EESEN_ROOT)/egs/aspire/s5/exp/tdnn_7b_chain_online/graph_pp
+  MODEL_DIR?=$(EESEN_ROOT)/egs/aspire/s5/exp/tdnn_7b_chain_online
+  sample_rate=8k
+  fbank=make_fbank_pitch
+else ifeq ($(MODELS),swbd.8k)
+  # 8k models from switchboard
+  ACWT=0.6
+  GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/data/lang_phn_sw1_fsh_tgpr
+  MODEL_DIR?=$(EESEN_ROOT)/asr_egs/swbd/v1-pitch/exp/train_phn_l5_c320
+  sample_rate=8k
+  fbank=make_fbank_pitch
+else ifeq ($(MODELS),tedlium.eesen)
+  KALDI_ROOT=$(EESEN_ROOT)
+  # v2-30ms 16k models from tedlium-release2
+  ACWT=0.8
+  # choose one GRAPH_DIR below
+  # smaller LM, faster decode, less RAM
+  GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v2-30ms/data/lang_phn_test_test_newlm
+  # most general, largest vocabulary/grammar
+  #GRAPH_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v2-30ms/data/lang_phn_test
+  MODEL_DIR?=$(EESEN_ROOT)/asr_egs/tedlium/v2-30ms/exp/train_phn_l5_c320_v1s
+  sample_rate=16k
+  fbank=make_fbank
+else ifeq ($(MODELS),swbd.tf)
+  EESEN_MODELS_ROOT=$(EESEN_ROOT)
+  # Tensorflow models
+  ACWT=0.6
+  GRAPH_DIR?=$(EESEN_MODELS_ROOT)/asr_egs/swbd/v2-pitch-30ms-tf-new/data/lang_phn_sw1_fsh_tgpr
+  #MODEL_DIR?=$(EESEN_MODELS_ROOT)/asr_egs/swbd/v2-pitch-30ms-tf-new/exp/train_phn_l5_c280_tf_29o/dbr-run6/model/epoch18
+  MODEL_DIR?=$(EESEN_MODELS_ROOT)/asr_egs/swbd/v2-pitch-30ms-tf-new/exp/train_phn_l5_c280_tf_29o
+  sample_rate=8k
+  fbank=make_fbank_pitch
+else ifeq ($(MODELS),aspire.yenda)
+  # Models from Yenda's online3 + aspire setup
+  # Best WER:
+  #  acwt 0.7
+  #  wip  3.5
+  ACWT=0.7
+  WIP=3.5
+  GRAPH_DIR?=$(EESEN_ROOT)/egs/talkbank/s5/aspire/exp/tdnn_7b_chain_online/graph_pp
+  MODEL_DIR?=$(EESEN_ROOT)/egs/talkbank/s5/aspire/exp/tdnn_7b_chain_online
+  sample_rate=8k
+  fbank=make_fbank
+endif
