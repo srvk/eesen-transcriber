@@ -1,75 +1,102 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby
 
+# you might want to install:
+#vagrant-aws (0.3.0)
+#vagrant-azure (2.0.0)
+#vagrant-google (2.2.0)
+#vagrant-sshfs (1.3.1)
+#vagrant-vbguest (0.15.2)
+
 Vagrant.configure("2") do |config|
 
-    # Default provider is VirtualBox!
-    # If you want AWS, you need to populate and run e.g.
-    #   . aws.sh; vagrant up --provider aws
-    # Make sure you don't check in aws.sh (maybe make a copy with your "secret" data)
-    # Before that, do
-    #   vagrant plugin install vagrant-aws; vagrant plugin install vagrant-sshfs
+  # Default provider is VirtualBox!
+  #   vagrant plugin install vagrant-vbguest
+  # If you want AWS, you need to populate and run e.g.
+  #   . aws.sh; vagrant up --provider aws
+  # Make sure you don't check in aws.sh (maybe make a copy with your "secret" data)
+  # Before that, do
+  #   vagrant plugin install vagrant-aws; vagrant plugin install vagrant-sshfs
+  # Similarly for vagrant-azure and vagrant-google
   #config.vm.box = "ubuntu/trusty64"
-    config.vm.box = "bento/ubuntu-16.04"
-    config.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777", "fmode=777"]
+  #config.vm.box = "bento/ubuntu-16.04"
+  config.vm.box = "google/gce"
+  config.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777", "fmode=777"]
 
-    config.vm.provider "virtualbox" do |vbox|
-      config.ssh.forward_x11 = true
+  config.vm.provider "virtualbox" do |vbox|
+    config.ssh.forward_x11 = true
 
-      # enable (uncomment) this for debugging output
-      #vbox.gui = true
+    # enable (uncomment) this for debugging output
+    #vbox.gui = true
 
-      # turn off annoying auto update guest additions
-      config.vbguest.auto_update = false
+    # turn off annoying auto update guest additions
+    config.vbguest.auto_update = false
       
-      # host-only network on which web browser serves files
-      config.vm.network "private_network", ip: "192.168.56.101"
+    # host-only network on which web browser serves files
+    config.vm.network "private_network", ip: "192.168.56.101"
 
-      vbox.cpus = 4
-      vbox.memory = 8192
+    vbox.cpus = 4
+    vbox.memory = 8192
+  end
+
+  config.vm.provider "aws" do |aws, override|
+    aws.tags["Name"] = "Eesen Transcriber"
+    #aws.ami = "ami-663a6e0c" # Ubuntu ("Trusty") Server 14.04 LTS AMI - US-East region
+    aws.ami = "ami-e5d9439a" # Ubuntu ("Xenial") Server 16.04 LTS AMI - US-East region
+    aws.instance_type = "m3.xlarge"
+
+    override.vm.synced_folder ".", "/vagrant", type: "sshfs", ssh_username: ENV['USER'], ssh_port: "22", prompt_for_password: "true"
+
+    override.vm.box = "http://speechkitchen.org/dummy.box"
+
+    # it is assumed these environment variables were set by ". aws.sh"
+    aws.access_key_id = ENV['AWS_KEY']
+    aws.secret_access_key = ENV['AWS_SECRETKEY']
+    aws.keypair_name = ENV['AWS_KEYPAIR']
+    override.ssh.username = "ubuntu"
+    override.ssh.private_key_path = ENV['AWS_PEM']
+
+    aws.terminate_on_shutdown = "true"
+    aws.region = ENV['AWS_REGION']
+
+    # https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#SecurityGroups
+    # Edit the security group on AWS Console; Inbound tab, add the HTTP rule
+    aws.security_groups = "launch-wizard-1"
+
+    #aws.subnet_id = "vpc-666c9a02"
+    aws.region_config "us-east-1" do |region|
+      #region.spot_instance = true
+      region.spot_max_price = "0.1"
     end
 
-    config.vm.provider "aws" do |aws, override|
+    # this works around the error from AWS AMI vm on 'vagrant up':
+    #   No host IP was given to the Vagrant core NFS helper. This is
+    #   an internal error that should be reported as a bug.
+    #override.nfs.functional = false
+  end
 
-      aws.tags["Name"] = "Eesen Transcriber"
-      aws.ami = "ami-663a6e0c" # Ubuntu ("Trusty") Server 14.04 LTS AMI - US-East region
-      aws.instance_type = "m3.xlarge"
+  config.vm.provider "google" do |google, override|
+    #google.tags["Name"] = "Eesen Transcriber"
+    #google.google_project_id = "YOUR_GOOGLE_CLOUD_PROJECT_ID"
+    #google.google_client_email = "YOUR_SERVICE_ACCOUNT_EMAIL_ADDRESS"
+    #google.google_json_key_location = "/path/to/your/private-key.json"
 
-      override.vm.synced_folder ".", "/vagrant", type: "sshfs", ssh_username: ENV['USER'], ssh_port: "22", prompt_for_password: "true"
+    google.image_family = 'ubuntu-1604-lts'
 
-      override.vm.box = "http://speechkitchen.org/dummy.box"
+    override.ssh.username = "ubuntu"
+    #override.ssh.private_key_path = "~/.ssh/id_rsa"
+    #override.ssh.private_key_path = "~/.ssh/google_compute_engine"
 
-      # it is assumed these environment variables were set by ". aws.sh"
-      aws.access_key_id = ENV['AWS_KEY']
-      aws.secret_access_key = ENV['AWS_SECRETKEY']
-      aws.keypair_name = ENV['AWS_KEYPAIR']
-      override.ssh.username = "ubuntu"
-      override.ssh.private_key_path = ENV['AWS_PEM']
+    #override.vm.synced_folder ".", "/vagrant", type: "sshfs", ssh_username: ENV['USER'], ssh_port: "22", prompt_for_password: "true"
 
-      aws.terminate_on_shutdown = "true"
-      aws.region = ENV['AWS_REGION']
-
-      # https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#SecurityGroups
-      # Edit the security group on AWS Console; Inbound tab, add the HTTP rule
-      aws.security_groups = "launch-wizard-1"
-
-      #aws.subnet_id = "vpc-666c9a02"
-      aws.region_config "us-east-1" do |region|
-        #region.spot_instance = true
-        region.spot_max_price = "0.1"
-      end
-
-      # this works around the error from AWS AMI vm on 'vagrant up':
-      #   No host IP was given to the Vagrant core NFS helper. This is
-      #   an internal error that should be reported as a bug.
-      #override.nfs.functional = false
-    end
-
+    #google.terminate_on_shutdown = "true"
+  end
+  
   config.vm.provision "shell", inline: <<-SHELL
     # change to 'kaldi' for Aspire models
-    TOOLKIT='eesen' 
-#    TOOLKIT='kaldi' 
-                                                                                                                              
+#    TOOLKIT='eesen'
+    TOOLKIT='kaldi'
+
     # turn off debconf prompting (annoying grub prompt)
     export DEBIAN_FRONTEND=noninteractive  
 
@@ -110,11 +137,14 @@ Vagrant.configure("2") do |config|
       cd kaldi
       git reset --hard 70748308810f
       cd tools
-      make -j `lscpu -p|grep -v "#"|wc -l`
+      extras/check_dependencies.sh
+      make -j || make || exit 1;
+      # `lscpu -p|grep -v "#"|wc -l`
       cd ../src
       ./configure --shared
       make depend
-      make -j `lscpu -p|grep -v "#"|wc -l`
+      make -j || make || exit 1;
+      #  `lscpu -p|grep -v "#"|wc -l`
     else
       # install srvk EESEN (does not require CUDA)
       git clone https://github.com/srvk/eesen
@@ -259,7 +289,7 @@ Vagrant.configure("2") do |config|
 end
 
 # always monitor watched folder
-  Vagrant.configure("2") do |config|
+Vagrant.configure("2") do |config|
   config.vm.provision "shell", run: "always", inline: <<-SHELL
     if grep --quiet vagrant /etc/passwd
     then
@@ -271,5 +301,5 @@ end
     rm -rf /var/run/motd.dynamic
 
     su ${user} -c "cd /home/${user}/tools/eesen-offline-transcriber && ./watch.sh >& /vagrant/log/watched.log &"
-SHELL
-  end
+  SHELL
+end
