@@ -47,7 +47,7 @@ Vagrant.configure("2") do |config|
 
     override.vm.synced_folder ".", "/vagrant", type: "sshfs", ssh_username: ENV['USER'], ssh_port: "22", prompt_for_password: "true"
 
-    override.vm.box = "http://speechkitchen.org/dummy.box"
+    override.vm.box = "http://speech-kitchen.org/dummy.box"
 
     # it is assumed these environment variables were set by ". aws.sh"
     aws.access_key_id = ENV['AWS_KEY']
@@ -122,7 +122,7 @@ Vagrant.configure("2") do |config|
     # If you wish to train EESEN with a GPU machine, uncomment this section to install CUDA
     # also uncomment the line that mentions cudatk-dir in the EESEN install section below
     #cd /home/${user}
-    #wget -nv http://speechkitchen.org/vms/Data/cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
+    #wget -nv http://speech-kitchen.org/vms/Data/cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
     #dpkg -i cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
     #rm cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
     #apt-get update                                                                  
@@ -178,7 +178,7 @@ Vagrant.configure("2") do |config|
 
       # aspire models - 8khz online/nnet3 chained
       cd /home/${user}/kaldi/egs
-      wget -nv http://speechkitchen.org/vms/Data/aspire-chain-model-srvk.tgz
+      wget -nv http://speech-kitchen.org/vms/Data/aspire-chain-model-srvk.tgz
       tar zxvf aspire-chain-model-srvk.tgz --dereference
       rm aspire-chain-model-srvk.tgz
 
@@ -191,7 +191,7 @@ Vagrant.configure("2") do |config|
 
       # get models
       cd /home/${user}/eesen/asr_egs/tedlium
-      wget -nv http://speechkitchen.org/vms/Data/v2-30ms.tgz
+      wget -nv http://speech-kitchen.org/vms/Data/v2-30ms.tgz
       tar zxvf v2-30ms.tgz --dereference
       rm v2-30ms.tgz
       # optionally get 8khz models
@@ -211,7 +211,7 @@ Vagrant.configure("2") do |config|
     # for "make" in run scripts (speech2text.sh and friends) to use this.
     # 
     # cd /home/${user}
-    # wget http://speechkitchen.org/vms/Data/rescore-eesen.tgz
+    # wget http://speech-kitchen.org/vms/Data/rescore-eesen.tgz
     # tar zxvf rescore-eesen.tgz
     # rm rescore-eesen.tgz    
 
