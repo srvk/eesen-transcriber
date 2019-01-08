@@ -129,7 +129,7 @@ In order to use the open-source Kaldi Aspire chain models (from http://kaldi-asr
 It's possible to get a 2% relative improvement in WER by adding a step to the decoding process, which rescores intermediate lattices with a larger language model (Cantab 4-gram, unpruned). This adds extra time to the decoding process, and requires more memory, so it is commented out of the Vagrantfile by default. But if you have a 16 GB host machine, and the extra time, try it out. The data file `rescore-eesen.tgz` contains an extra program, the language model, and a patched Makefile.
 
     cd /home/${user}
-    wget http://speechkitchen.org/vms/Data/rescore-eesen.tgz
+    wget http://speech-kitchen.org/vms/Data/rescore-eesen.tgz
     tar zxvf rescore-eesen.tgz
     rm rescore-eesen.tgz    
 
@@ -248,11 +248,11 @@ This will not wipe out any local data or results, only the virtual machine (eith
 
 ### Language Remodeling
 
-This VM now supports language model building according to instructions at SpeechKitchen.org: [Kaldi Language Model Building](http://speechkitchen.org/kaldi-language-model-building/)
+This VM now supports language model building according to instructions at Speech-Kitchen.org: [Kaldi Language Model Building](http://speech-kitchen.org/kaldi-language-model-building/)
 
 ### Error Analysis
 
-If you ran the full EESEN TEDLIUM experiment (`~/eesen/asr_egs/tedlium/v1`), it is possible to use SpeechKitchen.org's [Error Analysis Page](http://speechkitchen.org/error-analysis-instructions-for-tedlium-vm/) to produce and view graphs and charts that let you play with the scoring data and visualize it in different ways. (Look near the end for EESEN specifics)
+If you ran the full EESEN TEDLIUM experiment (`~/eesen/asr_egs/tedlium/v1`), it is possible to use Speech-Kitchen.org's [Error Analysis Page](http://speech-kitchen.org/error-analysis-instructions-for-tedlium-vm/) to produce and view graphs and charts that let you play with the scoring data and visualize it in different ways. (Look near the end for EESEN specifics)
 
 ### Tips & Tricks
 
