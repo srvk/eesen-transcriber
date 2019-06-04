@@ -19,8 +19,8 @@ Vagrant.configure("2") do |config|
   #   vagrant plugin install vagrant-aws; vagrant plugin install vagrant-sshfs
   # Similarly for vagrant-azure and vagrant-google
   #config.vm.box = "ubuntu/trusty64"
-  #config.vm.box = "bento/ubuntu-16.04"
-  config.vm.box = "google/gce"
+  config.vm.box = "bento/ubuntu-16.04"
+  #config.vm.box = "google/gce"
   config.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777", "fmode=777"]
 
   config.vm.provider "virtualbox" do |vbox|
@@ -97,13 +97,35 @@ Vagrant.configure("2") do |config|
 #    TOOLKIT='eesen'
     TOOLKIT='kaldi'
 
-    # turn off debconf prompting (annoying grub prompt)
-    export DEBIAN_FRONTEND=noninteractive  
+    # there are a few things we can do to reduce size, set to false if you experience problems
+    SHRINK=true
 
+    # if you experience fails during build, could add virtual memory
     apt-get update
-    #apt-get upgrade -y
     apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
+    # sudo apt install swapspace -y
 
+    # these are the main packages we need
+    sudo apt-get install -y git make automake libtool libtool-bin autoconf patch subversion fuse\
+       libatlas3-base libatlas-base-dev libatlas-dev liblapack-dev sox openjdk-8-jre libav-tools g++\
+       zlib1g-dev libsox-fmt-all apache2 sshfs
+
+    # turn off release upgrade messages
+    sed -i s/Prompt=lts/Prompt=never/ /etc/update-manager/release-upgrades
+    rm -f /var/lib/ubuntu-release-upgrader/*
+    /usr/lib/ubuntu-release-upgrader/release-upgrade-motd
+
+    # turn off debconf prompting (annoying grub prompt)
+    export DEBIAN_FRONTEND=noninteractive
+
+    # silence error message from missing file
+    touch /home/${user}/.Xauthority
+
+    # fix dash-as-bash
+    rm /bin/sh
+    ln -s /bin/bash /bin/sh  
+
+    # get the name of the default user
     if grep --quiet vagrant /etc/passwd
     then
       user="vagrant"
@@ -111,66 +133,68 @@ Vagrant.configure("2") do |config|
       user="ubuntu"
     fi
 
-    sudo apt-get install -y git make automake libtool libtool-bin autoconf patch subversion fuse\
-       libatlas3-base libatlas-base-dev libatlas-dev liblapack-dev sox openjdk-8-jre libav-tools g++\
-       zlib1g-dev libsox-fmt-all apache2 sshfs
-
-    # fix dash-as-bash
-    rm /bin/sh
-    ln -s /bin/bash /bin/sh  
-
     # If you wish to train EESEN with a GPU machine, uncomment this section to install CUDA
     # also uncomment the line that mentions cudatk-dir in the EESEN install section below
-    #cd /home/${user}
-    #wget -nv http://speech-kitchen.org/vms/Data/cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
-    #dpkg -i cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
-    #rm cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
-    #apt-get update                                                                  
-    #apt-get remove --purge xserver-xorg-video-nouveau                           
-    #apt-get install -y cuda
+    if false
+    then
+      cd /home/${user}
+      wget -nv http://speech-kitchen.org/vms/Data/cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
+      dpkg -i cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
+      rm cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
+      apt-get update
+      apt-get remove --purge xserver-xorg-video-nouveau
+      apt-get install -y cuda
+    fi
 
     if [ $TOOLKIT == 'kaldi' ]
     then
       # install Kaldi
       cd /home/${user}
       git clone https://github.com/kaldi-asr/kaldi
-      cd kaldi
+      cd kaldi/tools
       git reset --hard 70748308810f
-      cd tools
       extras/check_dependencies.sh
-      make -j || make || exit 1;
-      # `lscpu -p|grep -v "#"|wc -l`
+      sed -i 's/openfst.cs.nyu.edu/www.openfst.org/' Makefile
+      sed -i 's/wget /wget -nv /' Makefile
+      make -kj `nproc` || make || exit 1;
       cd ../src
       ./configure --shared
       make depend
-      make -j || make || exit 1;
-      #  `lscpu -p|grep -v "#"|wc -l`
-    else
+      make -kj `nproc` || make || exit 1;
+      $SHRINK && find ../tools/sctk-2.4.10/src ../tools/openfst-1.6.2/src . -name '*.o' -exec rm {} \;
+      $SHRINK && find ../tools/openfst-1.6.2/src src/*bin -executable -type f | xargs -n 1 -P `nproc` gzexe
+      $SHRINK && find ../tools/openfst-1.6.2/src src/*bin -executable -type f -name '*~' -exec rm {} \;
+    fi
+    if true
+    then
       # install srvk EESEN (does not require CUDA)
       git clone https://github.com/srvk/eesen
-      cd eesen
+      cd eesen/tools
       git reset --hard 581d80f  # 2016/12/09 support OpenFST 1.5.1
-      cd tools
-      make -j `lscpu -p|grep -v "#"|wc -l`
+      make -kj `nproc` || make || exit 1;
       # remove a parameter from scoring script
       sed -i 's/\ lur//g' sctk/bin/hubscr.pl
       cd ../src
       ./configure --shared #--cudatk-dir=/opt/nvidia/cuda
-      make -j `lscpu -p|grep -v "#"|wc -l`
-    fi
+      make -kj `nproc` || make || exit 1;
+      $SHRINK && find ../tools/sctk-2.4.9/src ../tools/openfst-1.4.1/src . -name '*.o' -exec rm {} \;
+      $SHRINK && find ../tools/openfst-1.4.1/src ./*bin -executable -type f | xargs -n 1 -P `nproc` gzexe
+      $SHRINK && find ../tools/openfst-1.4.1/src ./*bin -executable -type f -name '*~' -exec rm {} \;
 
-    # install language model building toolkit
-    cd /home/${user}/eesen/asr_egs/tedlium/v2-30ms
-    git clone http://github.com/srvk/lm_build
+      # install language model building toolkit
+      cd ../asr_egs/tedlium/v2-30ms
+      git clone http://github.com/srvk/lm_build
+    fi
 
     # get eesen-offline-transcriber
     mkdir -p /home/${user}/tools
     cd /home/${user}/tools
-    git clone https://github.com/srvk/srvk-eesen-offline-transcriber
-    mv srvk-eesen-offline-transcriber eesen-offline-transcriber
-    # make links to EESEN
-    cd eesen-offline-transcriber
+    git clone https://github.com/srvk/srvk-eesen-offline-transcriber eesen-offline-transcriber
 
+    # make links to EESEN
+    cd /home/${user}/tools/eesen-offline-transcriber
+    git reset --hard 8f63f31
+    #
     if [ $TOOLKIT == 'kaldi' ]
     then
       ln -s /home/${user}/kaldi/egs/swbd/s5/steps .
@@ -185,9 +209,16 @@ Vagrant.configure("2") do |config|
       # fix a hard coded pathname in model config files
       sed -i s/er1k/${user}/g aspire/s5/exp/tdnn_7b_chain_online/conf/online.conf
       sed -i s/er1k/${user}/g aspire/s5/exp/tdnn_7b_chain_online/conf/ivector_extractor.conf
-    else
-      ln -s /home/${user}/eesen/asr_egs/tedlium/v2-30ms/steps .
-      ln -s /home/${user}/eesen/asr_egs/tedlium/v2-30ms/utils .
+    fi
+    if true
+    then
+      cd /home/${user}/tools/eesen-offline-transcriber
+
+      #ln -s /home/${user}/eesen/asr_egs/tedlium/v2-30ms/steps .
+      #ln -s /home/${user}/eesen/asr_egs/tedlium/v2-30ms/utils .
+      cd steps && ln -s /home/${user}/eesen/asr_egs/tedlium/v2-30ms/steps/* .
+      cd ../utils && ln -s /home/${user}/eesen/asr_egs/tedlium/v2-30ms/utils/* .
+      cd ..
 
       # get models
       cd /home/${user}/eesen/asr_egs/tedlium
@@ -204,7 +235,7 @@ Vagrant.configure("2") do |config|
 
 
     # Uncomment for optional large language model rescoring
-    # produces generally 2% better Word Error Rates at the epense of longer
+    # produces generally 2% better Word Error Rates at the expense of longer
     # decoding time and memory requirements (Requires guest VM setting
     # of at least vbox.memory = 15360, just barely fitting in a 16GB host
     # computer - with warnings)   Substitute "make -f Makefile.rescore"
@@ -215,14 +246,16 @@ Vagrant.configure("2") do |config|
     # tar zxvf rescore-eesen.tgz
     # rm rescore-eesen.tgz    
 
+    # get XFCE, xterm if we want guest VM to open windows /menus on host
+    #sudo apt-get install -y xfce4-panel xterm
+
+
     # Results (and intermediate files) are placed on the shared host folder
     mkdir -p /vagrant/{build,log,transcribe_me,src-audio}
 
     ln -s /vagrant/build /home/${user}/tools/eesen-offline-transcriber/build
     ln -s /vagrant/src-audio /home/${user}/tools/eesen-offline-transcriber/src-audio
 
-    # get XFCE, xterm if we want guest VM to open windows /menus on host
-    #sudo apt-get install -y xfce4-panel xterm
 
     # Apache: set up web content
     cd /vagrant
@@ -233,9 +266,11 @@ Vagrant.configure("2") do |config|
     sed -i 's|/var/www/|/vagrant/www/|g' /etc/apache2/apache2.conf
     service apache2 restart
 
+
     # shorten paths used by vagrant ssh -c <command> commands
     # by symlinking ~/bin to here
     ln -s /home/${user}/tools/eesen-offline-transcriber /home/${user}/bin
+
 
     # get SLURM stuff
     apt-get install -y --no-install-recommends slurm-llnl < /usr/bin/yes
@@ -246,25 +281,19 @@ Vagrant.configure("2") do |config|
     echo 'OPTIONS="--syslog"' >> /etc/default/munge
     cp /vagrant/conf/slurm.conf /etc/slurm-llnl/slurm.conf
     cp /vagrant/conf/reconf-slurm.sh /root/
-    # 
-    # Supervisor stuff needed by slurm
+    #
+    # supervisor stuff needed by slurm
     # copy config first so it gets picked up
     cp /vagrant/conf/supervisor.conf /etc/supervisor.conf
     mkdir -p /etc/supervisor/conf.d
     cp /vagrant/conf/slurm.sv.conf /etc/supervisor/conf.d/
-    # Now start service
+    # now start service
     apt-get install -y supervisor
-    
-    # Turn off release upgrade messages
-    sed -i s/Prompt=lts/Prompt=never/ /etc/update-manager/release-upgrades
-    rm -f /var/lib/ubuntu-release-upgrader/*
-    /usr/lib/ubuntu-release-upgrader/release-upgrade-motd
-    
-    # Silence error message from missing file
-    touch /home/${user}/.Xauthority 
 
-    # Provisioning runs as root; we want files to belong to '${user}'
+
+    # provisioning runs as root; we want files to belong to '${user}'
     chown -R ${user}:${user} /home/${user}
+
 
     # Handy info
     echo ""
